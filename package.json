@@ -1,0 +1,19 @@
+{
+  "name": "system-context",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@cycle/dom": "^22.3.0",
+    "@cycle/run": "^5.2.0",
+    "rxjs": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^11.13.4"
+  }
+}
