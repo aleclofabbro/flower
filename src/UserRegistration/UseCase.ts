@@ -6,7 +6,7 @@ import {
   HasConfirmationRequestFailReason,
   HasRegistrationRequestId,
 } from './Types';
-import UseCase from '../UseCase';
+import { UseCase } from '../UseCase';
 
 export interface Signals {
   RegistrationRequest: UserRegistrationRequest
