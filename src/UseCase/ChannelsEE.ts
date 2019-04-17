@@ -57,6 +57,7 @@ export const createDomain = <Sigs, Flw extends Flow<Sigs>>(useCase: UseCase<Sigs
       emitter.on(sigName as string, handler)
       return () => emitter.off(sigName as string, handler)
     }
+
   const probeForAll = (emitterAll: EventEmitter) =>
     (
       probe: ProbeAll
@@ -91,10 +92,10 @@ export const createDomain = <Sigs, Flw extends Flow<Sigs>>(useCase: UseCase<Sigs
     }
 
     inSignals.on(sigName as string, handler)
-    return {
-      ...unsubs,
-      [sigName]: () => inSignals.off(sigName as string, handler)
-    }
+    return Object.assign(
+      unsubs, {
+        [sigName]: () => inSignals.off(sigName as string, handler)
+      })
   }, {} as { [N in SigNames]: () => unknown })
 
   return {
