@@ -17,11 +17,11 @@ export interface Signals {
 export interface Flow {
     RegistrationRequest: ['RegistrationRequestFail', 'RegistrationInCharge'];
     RegistrationInCharge: ['AttemptSendRegistrationConfirmation'];
-    AttemptSendRegistrationConfirmation: ['RegistrationConfirmationSent'];
     RegistrationConfirmationSent: ['ScheduleConfirmationTimeout'];
     RegistrationEmailIsUnreachable: ['DeleteRegistrationRequest'];
     ConfirmationWaitTimeout: ['AttemptSendRegistrationConfirmation', 'DeleteRegistrationRequest'];
-    ConfirmRegistrationRequest: ['RegistrationRequestFail', 'RegistrationConfirmed'];
+    ConfirmRegistrationRequest: ['RegistrationConfirmFail', 'RegistrationConfirmed'];
+    AttemptSendRegistrationConfirmation: [];
     DeleteRegistrationRequest: [];
     RegistrationConfirmFail: [];
     RegistrationConfirmed: [];

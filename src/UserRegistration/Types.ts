@@ -2,12 +2,12 @@ export type Email = string
 export type UserName = string
 export type RegistrationRequestId = string
 
-export enum May__UserName_Unavailable__Or__Contact_Already_Registered {
+export enum RegistrationRequestFailReason {
   UserNameUnavailable,
   ContactAlreadyRegistered,
 }
 
-export enum May__Not_Match__Or__Already_Confirmed {
+export enum ConfirmationRequestFailReason {
   NoMatch,
   RegistrationAlreadyConfirmed,
 }
@@ -18,11 +18,11 @@ export interface UserRegistrationRequest {
 }
 
 export interface HasRegistrationRequestFailReason {
-  reason: May__UserName_Unavailable__Or__Contact_Already_Registered
+  reason: RegistrationRequestFailReason
 }
 
 export interface HasConfirmationRequestFailReason {
-  reason: May__Not_Match__Or__Already_Confirmed
+  reason: ConfirmationRequestFailReason
 }
 
 export interface HasRegistrationRequestId {
@@ -30,7 +30,7 @@ export interface HasRegistrationRequestId {
 }
 
 export type RegistrationRecord = UserRegistrationRequest & HasRegistrationRequestId
-export type RegistrationConfirmRecord = RegistrationRecord & { attempt: number }
+export type RegistrationConfirmRecord = RegistrationRecord & { performedAttempts: number }
 
 export type ScheduleConfirmationTimeout = RegistrationConfirmRecord & { timeout: number, u?: 's' | 'm' | 'h' | 'd' }
 

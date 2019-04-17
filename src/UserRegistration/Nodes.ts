@@ -1,40 +1,55 @@
 import UserRegistration from './UseCase';
 import { Srv } from '../UseCase/OtherTypes';
-import { UserRegistrationRequest, May__UserName_Unavailable__Or__Contact_Already_Registered, RegistrationRequestId } from './Types';
+import { UserRegistrationRequest, RegistrationRequestFailReason, RegistrationRequestId, RegistrationConfirmRecord, HasRegistrationRequestId, RegistrationRecord, ConfirmationRequestFailReason } from './Types';
 
 export const createUseCase = (_: {
-  registerRequest: Srv<[UserRegistrationRequest], RegistrationRequestId | May__UserName_Unavailable__Or__Contact_Already_Registered>
+  maxSendAttempts: Srv<[RegistrationConfirmRecord], number>,
+  registerRequest: Srv<[UserRegistrationRequest], RegistrationRequestId | RegistrationRequestFailReason>
+  deleteRequest: Srv<[HasRegistrationRequestId], unknown>
+  confirmRegistration: Srv<[RegistrationRecord], ConfirmationRequestFailReason | true>
+  sendRegistrationConfirmation: Srv<[RegistrationConfirmRecord], unknown>
+  scheduleConfirmationTimeout: Srv<[RegistrationConfirmRecord], unknown>
 }) => {
   const useCase: UserRegistration = {
-    AttemptSendRegistrationConfirmation: (__/* , fw */) => {
-      console.log('AttemptSendRegistrationConfirmation', __)
+    AttemptSendRegistrationConfirmation: async (regConfRecord/* , fw */) => {
+      const incRegConfRecord: RegistrationConfirmRecord = {
+        ...regConfRecord,
+        performedAttempts: regConfRecord.performedAttempts + 1
+      }
+      await _.sendRegistrationConfirmation(incRegConfRecord)
     },
-    ConfirmRegistrationRequest: (__/* , fw */) => {
-      console.log('ConfirmRegistrationRequest', __)
+    ConfirmRegistrationRequest: async (regRecord, fw) => {
+      const resp = await _.confirmRegistration(regRecord)
+      if (resp === true) {
+        fw('RegistrationConfirmed', regRecord)
+      } else {
+        fw('RegistrationConfirmFail', { ...regRecord, reason: resp })
+      }
     },
-    ConfirmationWaitTimeout: (__/* , fw */) => {
-      console.log('ConfirmationWaitTimeout', __)
+    ConfirmationWaitTimeout: async (regConfRecord, fw) => {
+      if (regConfRecord.performedAttempts === await _.maxSendAttempts(regConfRecord)) {
+        fw('DeleteRegistrationRequest', { registrationRequestId: regConfRecord.registrationRequestId })
+      } else {
+        fw('AttemptSendRegistrationConfirmation', regConfRecord)
+      }
     },
-    DeleteRegistrationRequest: (__/* , fw */) => {
-      console.log('DeleteRegistrationRequest', __)
+    DeleteRegistrationRequest: async (hasRegReqId/* , fw */) => {
+      await _.deleteRequest(hasRegReqId)
     },
-    RegistrationConfirmFail: (__/* , fw */) => {
-      console.log('RegistrationConfirmFail', __)
+    RegistrationConfirmFail: (/* failedRecord , fw */) => {
     },
-    RegistrationConfirmationSent: (__/* , fw */) => {
-      console.log('RegistrationConfirmationSent', __)
+    RegistrationConfirmationSent: (registrationConfirmRecord, fw) => {
+      fw('ScheduleConfirmationTimeout', registrationConfirmRecord)
     },
-    RegistrationConfirmed: (__/* , fw */) => {
-      console.log('RegistrationConfirmed', __)
+    RegistrationConfirmed: (/* registrationRecord, fw */) => {
     },
-    RegistrationEmailIsUnreachable: (__/* , fw */) => {
-      console.log('RegistrationEmailIsUnreachable', __)
+    RegistrationEmailIsUnreachable: (registrationConfirmRecord, fw) => {
+      fw('DeleteRegistrationRequest', registrationConfirmRecord)
     },
-    RegistrationInCharge: (__/* , fw */) => {
-      console.log('RegistrationInCharge', __)
+    RegistrationInCharge: (registrationRecord, fw) => {
+      fw('AttemptSendRegistrationConfirmation', { ...registrationRecord, performedAttempts: 0 })
     },
     RegistrationRequest: async (request, fw) => {
-      console.log('RegistrationRequest', request)
       const response = await _.registerRequest(request)
       if ('number' === typeof response) {
         fw('RegistrationRequestFail', { ...request, reason: response })
@@ -43,10 +58,9 @@ export const createUseCase = (_: {
       }
     },
     RegistrationRequestFail: (__/* , fw */) => {
-      console.log('RegistrationRequestFail', __)
     },
-    ScheduleConfirmationTimeout: (__/* , fw */) => {
-      console.log('ScheduleConfirmationTimeout', __)
+    ScheduleConfirmationTimeout: async (regConfRec/*  , fw */) => {
+      await _.scheduleConfirmationTimeout(regConfRec)
     }
   }
   return useCase

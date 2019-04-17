@@ -49,40 +49,82 @@ var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createUseCase = function (_) {
     var useCase = {
-        AttemptSendRegistrationConfirmation: function (__ /* , fw */) {
-            console.log('AttemptSendRegistrationConfirmation', __);
+        AttemptSendRegistrationConfirmation: function (regConfRecord /* , fw */) { return __awaiter(_this, void 0, void 0, function () {
+            var incRegConfRecord;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        incRegConfRecord = __assign({}, regConfRecord, { performedAttempts: regConfRecord.performedAttempts + 1 });
+                        return [4 /*yield*/, _.sendRegistrationConfirmation(incRegConfRecord)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        }); },
+        ConfirmRegistrationRequest: function (regRecord, fw) { return __awaiter(_this, void 0, void 0, function () {
+            var resp;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, _.confirmRegistration(regRecord)];
+                    case 1:
+                        resp = _a.sent();
+                        if (resp === true) {
+                            fw('RegistrationConfirmed', regRecord);
+                        }
+                        else {
+                            fw('RegistrationConfirmFail', __assign({}, regRecord, { reason: resp }));
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        }); },
+        ConfirmationWaitTimeout: function (regConfRecord, fw) { return __awaiter(_this, void 0, void 0, function () {
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = regConfRecord.performedAttempts;
+                        return [4 /*yield*/, _.maxSendAttempts(regConfRecord)];
+                    case 1:
+                        if (_a === (_b.sent())) {
+                            fw('DeleteRegistrationRequest', { registrationRequestId: regConfRecord.registrationRequestId });
+                        }
+                        else {
+                            fw('AttemptSendRegistrationConfirmation', regConfRecord);
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        }); },
+        DeleteRegistrationRequest: function (hasRegReqId /* , fw */) { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, _.deleteRequest(hasRegReqId)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        }); },
+        RegistrationConfirmFail: function ( /* failedRecord , fw */) {
         },
-        ConfirmRegistrationRequest: function (__ /* , fw */) {
-            console.log('ConfirmRegistrationRequest', __);
+        RegistrationConfirmationSent: function (registrationConfirmRecord, fw) {
+            fw('ScheduleConfirmationTimeout', registrationConfirmRecord);
         },
-        ConfirmationWaitTimeout: function (__ /* , fw */) {
-            console.log('ConfirmationWaitTimeout', __);
+        RegistrationConfirmed: function ( /* registrationRecord, fw */) {
         },
-        DeleteRegistrationRequest: function (__ /* , fw */) {
-            console.log('DeleteRegistrationRequest', __);
+        RegistrationEmailIsUnreachable: function (registrationConfirmRecord, fw) {
+            fw('DeleteRegistrationRequest', registrationConfirmRecord);
         },
-        RegistrationConfirmFail: function (__ /* , fw */) {
-            console.log('RegistrationConfirmFail', __);
-        },
-        RegistrationConfirmationSent: function (__ /* , fw */) {
-            console.log('RegistrationConfirmationSent', __);
-        },
-        RegistrationConfirmed: function (__ /* , fw */) {
-            console.log('RegistrationConfirmed', __);
-        },
-        RegistrationEmailIsUnreachable: function (__ /* , fw */) {
-            console.log('RegistrationEmailIsUnreachable', __);
-        },
-        RegistrationInCharge: function (__ /* , fw */) {
-            console.log('RegistrationInCharge', __);
+        RegistrationInCharge: function (registrationRecord, fw) {
+            fw('AttemptSendRegistrationConfirmation', __assign({}, registrationRecord, { performedAttempts: 0 }));
         },
         RegistrationRequest: function (request, fw) { return __awaiter(_this, void 0, void 0, function () {
             var response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        console.log('RegistrationRequest', request);
-                        return [4 /*yield*/, _.registerRequest(request)];
+                    case 0: return [4 /*yield*/, _.registerRequest(request)];
                     case 1:
                         response = _a.sent();
                         if ('number' === typeof response) {
@@ -96,11 +138,17 @@ exports.createUseCase = function (_) {
             });
         }); },
         RegistrationRequestFail: function (__ /* , fw */) {
-            console.log('RegistrationRequestFail', __);
         },
-        ScheduleConfirmationTimeout: function (__ /* , fw */) {
-            console.log('ScheduleConfirmationTimeout', __);
-        }
+        ScheduleConfirmationTimeout: function (regConfRec /*  , fw */) { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, _.scheduleConfirmationTimeout(regConfRec)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        }); }
     };
     return useCase;
 };
