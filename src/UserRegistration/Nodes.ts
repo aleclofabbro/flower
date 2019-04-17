@@ -1,52 +1,52 @@
 import UserRegistration from './UseCase';
 import { Srv } from '../UseCase/OtherTypes';
-import { UserRegistrationRequest, RegistrationRecord, May__UserName_Unavailable__Or__Contact_Already_Registered } from './Types';
+import { UserRegistrationRequest, May__UserName_Unavailable__Or__Contact_Already_Registered, RegistrationRequestId } from './Types';
 
 export const createUseCase = (_: {
-  registerRequest: Srv<[UserRegistrationRequest], RegistrationRecord | May__UserName_Unavailable__Or__Contact_Already_Registered>
+  registerRequest: Srv<[UserRegistrationRequest], RegistrationRequestId | May__UserName_Unavailable__Or__Contact_Already_Registered>
 }) => {
   const useCase: UserRegistration = {
-    AttemptSendRegistrationConfirmation: (_/* , followUp */) => {
-      console.log('AttemptSendRegistrationConfirmation', _)
+    AttemptSendRegistrationConfirmation: (__/* , followUp */) => {
+      console.log('AttemptSendRegistrationConfirmation', __)
     },
-    ConfirmRegistrationRequest: (_/* , followUp */) => {
-      console.log('ConfirmRegistrationRequest', _)
+    ConfirmRegistrationRequest: (__/* , followUp */) => {
+      console.log('ConfirmRegistrationRequest', __)
     },
-    ConfirmationWaitTimeout: (_/* , followUp */) => {
-      console.log('ConfirmationWaitTimeout', _)
+    ConfirmationWaitTimeout: (__/* , followUp */) => {
+      console.log('ConfirmationWaitTimeout', __)
     },
-    DeleteRegistrationRequest: (_/* , followUp */) => {
-      console.log('DeleteRegistrationRequest', _)
+    DeleteRegistrationRequest: (__/* , followUp */) => {
+      console.log('DeleteRegistrationRequest', __)
     },
-    RegistrationConfirmFail: (_/* , followUp */) => {
-      console.log('RegistrationConfirmFail', _)
+    RegistrationConfirmFail: (__/* , followUp */) => {
+      console.log('RegistrationConfirmFail', __)
     },
-    RegistrationConfirmationSent: (_/* , followUp */) => {
-      console.log('RegistrationConfirmationSent', _)
+    RegistrationConfirmationSent: (__/* , followUp */) => {
+      console.log('RegistrationConfirmationSent', __)
     },
-    RegistrationConfirmed: (_/* , followUp */) => {
-      console.log('RegistrationConfirmed', _)
+    RegistrationConfirmed: (__/* , followUp */) => {
+      console.log('RegistrationConfirmed', __)
     },
-    RegistrationEmailIsUnreachable: (_/* , followUp */) => {
-      console.log('RegistrationEmailIsUnreachable', _)
+    RegistrationEmailIsUnreachable: (__/* , followUp */) => {
+      console.log('RegistrationEmailIsUnreachable', __)
     },
-    RegistrationInCharge: (_/* , followUp */) => {
-      console.log('RegistrationInCharge', _)
+    RegistrationInCharge: (__/* , followUp */) => {
+      console.log('RegistrationInCharge', __)
     },
     RegistrationRequest: async (request, followUp) => {
-      const resp = await _.registerRequest(request)
-      if ('string' === typeof resp) {
-        followUp('RegistrationRequestFail', { ...request, reason: resp })
+      console.log('RegistrationRequest', request)
+      const response = await _.registerRequest(request)
+      if ('number' === typeof response) {
+        return Array.of(['RegistrationRequestFail', { ...request, reason: response }])
       } else {
-        followUp('RegistrationInCharge', resp)
+        followUp('RegistrationInCharge', { ...request, registrationRequestId: response })
       }
-      console.log('RegistrationRequest', _)
     },
-    RegistrationRequestFail: (_/* , followUp */) => {
-      console.log('RegistrationRequestFail', _)
+    RegistrationRequestFail: (__/* , followUp */) => {
+      console.log('RegistrationRequestFail', __)
     },
-    ScheduleConfirmationTimeout: (_/* , followUp */) => {
-      console.log('ScheduleConfirmationTimeout', _)
+    ScheduleConfirmationTimeout: (__/* , followUp */) => {
+      console.log('ScheduleConfirmationTimeout', __)
     }
   }
   return useCase

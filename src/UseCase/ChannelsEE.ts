@@ -77,7 +77,7 @@ export const createDomain = <Sigs, Flw extends Flow<Sigs>>(useCase: UseCase<Sigs
   const sigNames = Object.keys(useCase) as SigNames[]
   const unsubscribe = sigNames.reduce<{ [N in SigNames]: () => unknown }>((unsubs, sigName) => {
     type SigName = typeof sigName
-    const handler = (signal: Sigs[SigName], meta: Meta) => {
+    const handler = async (signal: Sigs[SigName], meta: Meta) => {
 
       //inSignalsAll.emit(SIG_ALL_NAME, sigName, signal, meta)
       const useCaseNode = useCase[sigName]
@@ -88,7 +88,10 @@ export const createDomain = <Sigs, Flw extends Flow<Sigs>>(useCase: UseCase<Sigs
         }
       }
 
-      useCaseNode(signal, followUp)
+      const followups = await useCaseNode(signal, followUp)
+      if (followups) {
+        followups.forEach(followup => followUp(...followup))
+      }
     }
 
     inSignals.on(sigName as string, handler)

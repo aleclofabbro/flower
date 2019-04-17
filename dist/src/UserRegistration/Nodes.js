@@ -49,56 +49,57 @@ var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createUseCase = function (_) {
     var useCase = {
-        AttemptSendRegistrationConfirmation: function (_ /* , followUp */) {
-            console.log('AttemptSendRegistrationConfirmation', _);
+        AttemptSendRegistrationConfirmation: function (__ /* , followUp */) {
+            console.log('AttemptSendRegistrationConfirmation', __);
         },
-        ConfirmRegistrationRequest: function (_ /* , followUp */) {
-            console.log('ConfirmRegistrationRequest', _);
+        ConfirmRegistrationRequest: function (__ /* , followUp */) {
+            console.log('ConfirmRegistrationRequest', __);
         },
-        ConfirmationWaitTimeout: function (_ /* , followUp */) {
-            console.log('ConfirmationWaitTimeout', _);
+        ConfirmationWaitTimeout: function (__ /* , followUp */) {
+            console.log('ConfirmationWaitTimeout', __);
         },
-        DeleteRegistrationRequest: function (_ /* , followUp */) {
-            console.log('DeleteRegistrationRequest', _);
+        DeleteRegistrationRequest: function (__ /* , followUp */) {
+            console.log('DeleteRegistrationRequest', __);
         },
-        RegistrationConfirmFail: function (_ /* , followUp */) {
-            console.log('RegistrationConfirmFail', _);
+        RegistrationConfirmFail: function (__ /* , followUp */) {
+            console.log('RegistrationConfirmFail', __);
         },
-        RegistrationConfirmationSent: function (_ /* , followUp */) {
-            console.log('RegistrationConfirmationSent', _);
+        RegistrationConfirmationSent: function (__ /* , followUp */) {
+            console.log('RegistrationConfirmationSent', __);
         },
-        RegistrationConfirmed: function (_ /* , followUp */) {
-            console.log('RegistrationConfirmed', _);
+        RegistrationConfirmed: function (__ /* , followUp */) {
+            console.log('RegistrationConfirmed', __);
         },
-        RegistrationEmailIsUnreachable: function (_ /* , followUp */) {
-            console.log('RegistrationEmailIsUnreachable', _);
+        RegistrationEmailIsUnreachable: function (__ /* , followUp */) {
+            console.log('RegistrationEmailIsUnreachable', __);
         },
-        RegistrationInCharge: function (_ /* , followUp */) {
-            console.log('RegistrationInCharge', _);
+        RegistrationInCharge: function (__ /* , followUp */) {
+            console.log('RegistrationInCharge', __);
         },
         RegistrationRequest: function (request, followUp) { return __awaiter(_this, void 0, void 0, function () {
-            var resp;
+            var response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, _.registerRequest(request)];
+                    case 0:
+                        console.log('RegistrationRequest', request);
+                        return [4 /*yield*/, _.registerRequest(request)];
                     case 1:
-                        resp = _a.sent();
-                        if ('string' === typeof resp) {
-                            followUp('RegistrationRequestFail', __assign({}, request, { reason: resp }));
+                        response = _a.sent();
+                        if ('number' === typeof response) {
+                            return [2 /*return*/, Array.of(['RegistrationRequestFail', __assign({}, request, { reason: response })])];
                         }
                         else {
-                            followUp('RegistrationInCharge', resp);
+                            followUp('RegistrationInCharge', __assign({}, request, { registrationRequestId: response }));
                         }
-                        console.log('RegistrationRequest', _);
                         return [2 /*return*/];
                 }
             });
         }); },
-        RegistrationRequestFail: function (_ /* , followUp */) {
-            console.log('RegistrationRequestFail', _);
+        RegistrationRequestFail: function (__ /* , followUp */) {
+            console.log('RegistrationRequestFail', __);
         },
-        ScheduleConfirmationTimeout: function (_ /* , followUp */) {
-            console.log('ScheduleConfirmationTimeout', _);
+        ScheduleConfirmationTimeout: function (__ /* , followUp */) {
+            console.log('ScheduleConfirmationTimeout', __);
         }
     };
     return useCase;
