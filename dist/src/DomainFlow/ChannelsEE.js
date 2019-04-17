@@ -59,85 +59,85 @@ var newMeta = function () { return ({
     id: id()
 }); };
 var SIG_ALL_NAME = '*';
-exports.createDomain = function (useCase, opts) {
+exports.createDomain = function (domainFlow, opts) {
     if (opts === void 0) { opts = {}; }
-    var outSignals = new events_1.EventEmitter();
-    var outSignalsAll = new events_1.EventEmitter();
-    var inSignals = new events_1.EventEmitter();
-    var inSignalsAll = new events_1.EventEmitter();
-    var signalOut = function (sigName, signal, meta) {
+    var outMessages = new events_1.EventEmitter();
+    var outMessagesAll = new events_1.EventEmitter();
+    var inMessages = new events_1.EventEmitter();
+    var inMessagesAll = new events_1.EventEmitter();
+    var messageOut = function (msgName, message, meta) {
         if (meta === void 0) { meta = newMeta(); }
-        if ('string' !== typeof sigName) {
-            throw "signalOut : Only string sigNames - sigName:" + sigName + " signal:" + signal;
+        if ('string' !== typeof msgName) {
+            throw "messageOut : Only string msgNames - msgName:" + msgName + " message:" + message;
         }
-        var target = outSignals;
-        var targetAll = outSignalsAll;
+        var target = outMessages;
+        var targetAll = outMessagesAll;
         if (opts.shortCircuit) {
-            if ('boolean' === typeof opts.shortCircuit || opts.shortCircuit.find(function (_) { return sigName === _; })) {
-                target = inSignals;
-                targetAll = inSignalsAll;
+            if ('boolean' === typeof opts.shortCircuit || opts.shortCircuit.find(function (_) { return msgName === _; })) {
+                target = inMessages;
+                targetAll = inMessagesAll;
             }
         }
-        targetAll.emit(SIG_ALL_NAME, sigName, signal, meta);
-        target.emit(sigName, signal, meta);
+        targetAll.emit(SIG_ALL_NAME, msgName, message, meta);
+        target.emit(msgName, message, meta);
     };
-    var signalIn = function (sigName, signal, meta) {
+    var messageIn = function (msgName, message, meta) {
         if (meta === void 0) { meta = newMeta(); }
-        if ('string' !== typeof sigName) {
-            throw "signalIn : Only string sigNames - sigName:" + sigName + " signal:" + signal;
+        if ('string' !== typeof msgName) {
+            throw "messageIn : Only string msgNames - msgName:" + msgName + " message:" + message;
         }
-        inSignalsAll.emit(SIG_ALL_NAME, sigName, signal, meta);
-        inSignals.emit(sigName, signal, meta);
+        inMessagesAll.emit(SIG_ALL_NAME, msgName, message, meta);
+        inMessages.emit(msgName, message, meta);
     };
     var probeFor = function (emitter) {
-        return function (sigName, probe) {
-            if ('string' !== typeof sigName) {
-                throw "probeFor : Only string sigNames - sigName:" + sigName;
+        return function (msgName, probe) {
+            if ('string' !== typeof msgName) {
+                throw "probeFor : Only string msgNames - msgName:" + msgName;
             }
-            var handler = function (signal, meta) {
-                probe(signal, meta);
+            var handler = function (message, meta) {
+                probe(message, meta);
             };
-            emitter.on(sigName, handler);
-            return function () { return emitter.off(sigName, handler); };
+            emitter.on(msgName, handler);
+            return function () { return emitter.off(msgName, handler); };
         };
     };
     var probeForAll = function (emitterAll) {
         return function (probe) {
-            var handler = function (sigName, signal, meta) {
-                probe(sigName, signal, meta);
+            var handler = function (msgName, message, meta) {
+                probe(msgName, message, meta);
             };
             emitterAll.on(SIG_ALL_NAME, handler);
             return function () { return emitterAll.off(SIG_ALL_NAME, handler); };
         };
     };
-    var probeIn = probeFor(inSignals);
-    var probeOut = probeFor(outSignals);
-    var probeInAll = probeForAll(inSignalsAll);
-    var probeOutAll = probeForAll(outSignalsAll);
-    var sigNames = Object.keys(useCase);
-    var unsubscribe = sigNames.reduce(function (unsubs, sigName) {
+    var probeIn = probeFor(inMessages);
+    var probeOut = probeFor(outMessages);
+    var probeInAll = probeForAll(inMessagesAll);
+    var probeOutAll = probeForAll(outMessagesAll);
+    var msgNames = Object.keys(domainFlow);
+    var unsubscribe = msgNames.reduce(function (unsubs, msgName) {
         var _a;
-        var handler = function (signal, meta) { return __awaiter(_this, void 0, void 0, function () {
-            var useCaseNode, followUp;
+        var handler = function (message, meta) { return __awaiter(_this, void 0, void 0, function () {
+            var domainFlowNode, follows;
             return __generator(this, function (_a) {
-                useCaseNode = useCase[sigName];
-                followUp = function () {
+                domainFlowNode = domainFlow[msgName];
+                follows = function () {
                     var args = [];
                     for (var _i = 0; _i < arguments.length; _i++) {
                         args[_i] = arguments[_i];
                     }
                     if (args.length !== 0) {
-                        var _a = __read(args, 2), fwSigName = _a[0], signal_1 = _a[1];
-                        signalOut(fwSigName, signal_1, meta);
+                        var _a = __read(args, 2), fwMsgName = _a[0], message_1 = _a[1];
+                        messageOut(fwMsgName, message_1, meta);
                     }
                 };
-                useCaseNode(signal, followUp);
+                domainFlowNode(message, follows);
                 return [2 /*return*/];
             });
         }); };
-        inSignals.on(sigName, handler);
+        inMessages.on(msgName, handler);
         return Object.assign(unsubs, (_a = {},
-            _a[sigName] = function () { return inSignals.off(sigName, handler); },
+            _a[msgName] = function () { return inMessages.off(msgName, handler); },
             _a));
     }, {});
     return {
@@ -145,8 +145,8 @@ exports.createDomain = function (useCase, opts) {
         probeOut: probeOut,
         probeInAll: probeInAll,
         probeOutAll: probeOutAll,
-        signalOut: signalOut,
-        signalIn: signalIn,
+        messageOut: messageOut,
+        messageIn: messageIn,
         unsubscribe: unsubscribe
     };
 };

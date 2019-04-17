@@ -1,6 +1,6 @@
 import { UserRegistrationRequest, HasRegistrationRequestFailReason, RegistrationRecord, RegistrationConfirmRecord, HasConfirmationRequestFailReason, HasRegistrationRequestId } from './Types';
-import { UseCase } from '../UseCase';
-export interface Signals {
+import { DomainFlow } from '../DomainFlow';
+export interface Messages {
     RegistrationRequest: UserRegistrationRequest;
     RegistrationRequestFail: UserRegistrationRequest & HasRegistrationRequestFailReason;
     RegistrationInCharge: RegistrationRecord;
@@ -28,6 +28,6 @@ export interface Flow {
     RegistrationRequestFail: [];
     ScheduleConfirmationTimeout: [];
 }
-export declare type UserRegistrationUseCase = UseCase<Signals, Flow>;
-export default UserRegistrationUseCase;
-//# sourceMappingURL=UseCase.d.ts.map
+export declare type UserRegistrationDomainFlow = DomainFlow<Messages, Flow>;
+export default UserRegistrationDomainFlow;
+//# sourceMappingURL=DomainFlow.d.ts.map

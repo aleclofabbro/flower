@@ -47,8 +47,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createUseCase = function (_) {
-    var useCase = {
+exports.createDomainNodes = function (_) {
+    var domainNodes = {
         AttemptSendRegistrationConfirmation: function (regConfRecord /* , fw */) { return __awaiter(_this, void 0, void 0, function () {
             var incRegConfRecord;
             return __generator(this, function (_a) {
@@ -150,6 +150,6 @@ exports.createUseCase = function (_) {
             });
         }); }
     };
-    return useCase;
+    return domainNodes;
 };
 //# sourceMappingURL=Nodes.js.map

@@ -6,9 +6,9 @@ import {
   HasConfirmationRequestFailReason,
   HasRegistrationRequestId,
 } from './Types';
-import { UseCase } from '../UseCase';
+import { DomainFlow } from '../DomainFlow';
 
-export interface Signals {
+export interface Messages {
   RegistrationRequest: UserRegistrationRequest
   RegistrationRequestFail: UserRegistrationRequest & HasRegistrationRequestFailReason
   RegistrationInCharge: RegistrationRecord
@@ -42,6 +42,6 @@ export interface Flow {
   ScheduleConfirmationTimeout: []
 }
 
-export type UserRegistrationUseCase = UseCase<Signals, Flow>
+export type UserRegistrationDomainFlow = DomainFlow<Messages, Flow>
 
-export default UserRegistrationUseCase
+export default UserRegistrationDomainFlow

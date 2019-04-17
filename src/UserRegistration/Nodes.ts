@@ -1,8 +1,16 @@
-import UserRegistration from './UseCase';
-import { Srv } from '../UseCase/OtherTypes';
-import { UserRegistrationRequest, RegistrationRequestFailReason, RegistrationRequestId, RegistrationConfirmRecord, HasRegistrationRequestId, RegistrationRecord, ConfirmationRequestFailReason } from './Types';
+import UserRegistration from './DomainFlow';
+import { Srv } from '../DomainFlow/OtherTypes';
+import {
+  UserRegistrationRequest,
+  RegistrationRequestFailReason,
+  RegistrationRequestId,
+  RegistrationConfirmRecord,
+  HasRegistrationRequestId,
+  RegistrationRecord,
+  ConfirmationRequestFailReason
+} from './Types';
 
-export const createUseCase = (_: {
+export const createDomainNodes = (_: {
   maxSendAttempts: Srv<[RegistrationConfirmRecord], number>,
   registerRequest: Srv<[UserRegistrationRequest], RegistrationRequestId | RegistrationRequestFailReason>
   deleteRequest: Srv<[HasRegistrationRequestId], unknown>
@@ -10,7 +18,7 @@ export const createUseCase = (_: {
   sendRegistrationConfirmation: Srv<[RegistrationConfirmRecord], unknown>
   scheduleConfirmationTimeout: Srv<[RegistrationConfirmRecord], unknown>
 }) => {
-  const useCase: UserRegistration = {
+  const domainNodes: UserRegistration = {
     AttemptSendRegistrationConfirmation: async (regConfRecord/* , fw */) => {
       const incRegConfRecord: RegistrationConfirmRecord = {
         ...regConfRecord,
@@ -63,5 +71,5 @@ export const createUseCase = (_: {
       await _.scheduleConfirmationTimeout(regConfRec)
     }
   }
-  return useCase
+  return domainNodes
 }
