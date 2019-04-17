@@ -49,34 +49,34 @@ var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createUseCase = function (_) {
     var useCase = {
-        AttemptSendRegistrationConfirmation: function (__ /* , followUp */) {
+        AttemptSendRegistrationConfirmation: function (__ /* , fw */) {
             console.log('AttemptSendRegistrationConfirmation', __);
         },
-        ConfirmRegistrationRequest: function (__ /* , followUp */) {
+        ConfirmRegistrationRequest: function (__ /* , fw */) {
             console.log('ConfirmRegistrationRequest', __);
         },
-        ConfirmationWaitTimeout: function (__ /* , followUp */) {
+        ConfirmationWaitTimeout: function (__ /* , fw */) {
             console.log('ConfirmationWaitTimeout', __);
         },
-        DeleteRegistrationRequest: function (__ /* , followUp */) {
+        DeleteRegistrationRequest: function (__ /* , fw */) {
             console.log('DeleteRegistrationRequest', __);
         },
-        RegistrationConfirmFail: function (__ /* , followUp */) {
+        RegistrationConfirmFail: function (__ /* , fw */) {
             console.log('RegistrationConfirmFail', __);
         },
-        RegistrationConfirmationSent: function (__ /* , followUp */) {
+        RegistrationConfirmationSent: function (__ /* , fw */) {
             console.log('RegistrationConfirmationSent', __);
         },
-        RegistrationConfirmed: function (__ /* , followUp */) {
+        RegistrationConfirmed: function (__ /* , fw */) {
             console.log('RegistrationConfirmed', __);
         },
-        RegistrationEmailIsUnreachable: function (__ /* , followUp */) {
+        RegistrationEmailIsUnreachable: function (__ /* , fw */) {
             console.log('RegistrationEmailIsUnreachable', __);
         },
-        RegistrationInCharge: function (__ /* , followUp */) {
+        RegistrationInCharge: function (__ /* , fw */) {
             console.log('RegistrationInCharge', __);
         },
-        RegistrationRequest: function (request, followUp) { return __awaiter(_this, void 0, void 0, function () {
+        RegistrationRequest: function (request, fw) { return __awaiter(_this, void 0, void 0, function () {
             var response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -86,19 +86,19 @@ exports.createUseCase = function (_) {
                     case 1:
                         response = _a.sent();
                         if ('number' === typeof response) {
-                            return [2 /*return*/, Array.of(['RegistrationRequestFail', __assign({}, request, { reason: response })])];
+                            fw('RegistrationRequestFail', __assign({}, request, { reason: response }));
                         }
                         else {
-                            followUp('RegistrationInCharge', __assign({}, request, { registrationRequestId: response }));
+                            fw('RegistrationInCharge', __assign({}, request, { registrationRequestId: response }));
                         }
                         return [2 /*return*/];
                 }
             });
         }); },
-        RegistrationRequestFail: function (__ /* , followUp */) {
+        RegistrationRequestFail: function (__ /* , fw */) {
             console.log('RegistrationRequestFail', __);
         },
-        ScheduleConfirmationTimeout: function (__ /* , followUp */) {
+        ScheduleConfirmationTimeout: function (__ /* , fw */) {
             console.log('ScheduleConfirmationTimeout', __);
         }
     };

@@ -1,7 +1,6 @@
 export declare type FollowUp<T extends keyof Signals, Signals, F extends Flow<Signals>> = (...followUpTuple: FollowUpTuple<T, Signals, F>) => unknown;
-export declare type NodeReturnType<T extends keyof Signals, Signals, F extends Flow<Signals>> = void | Promise<void> | FollowUpTuple<T, Signals, F>[] | Promise<FollowUpTuple<T, Signals, F>[]>;
 export declare type UseCase<Signals, F extends Flow<Signals>> = {
-    [T in keyof Signals]: (signal: Signals[T], followup: FollowUp<T, Signals, F>) => NodeReturnType<T, Signals, F>;
+    [T in keyof Signals]: (signal: Signals[T], followup: FollowUp<T, Signals, F>) => unknown;
 };
 export declare type Flow<Signals> = {
     [T in keyof Signals]: [] | [keyof Signals] | [keyof Signals, keyof Signals] | [keyof Signals, keyof Signals, keyof Signals];

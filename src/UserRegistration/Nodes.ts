@@ -6,46 +6,46 @@ export const createUseCase = (_: {
   registerRequest: Srv<[UserRegistrationRequest], RegistrationRequestId | May__UserName_Unavailable__Or__Contact_Already_Registered>
 }) => {
   const useCase: UserRegistration = {
-    AttemptSendRegistrationConfirmation: (__/* , followUp */) => {
+    AttemptSendRegistrationConfirmation: (__/* , fw */) => {
       console.log('AttemptSendRegistrationConfirmation', __)
     },
-    ConfirmRegistrationRequest: (__/* , followUp */) => {
+    ConfirmRegistrationRequest: (__/* , fw */) => {
       console.log('ConfirmRegistrationRequest', __)
     },
-    ConfirmationWaitTimeout: (__/* , followUp */) => {
+    ConfirmationWaitTimeout: (__/* , fw */) => {
       console.log('ConfirmationWaitTimeout', __)
     },
-    DeleteRegistrationRequest: (__/* , followUp */) => {
+    DeleteRegistrationRequest: (__/* , fw */) => {
       console.log('DeleteRegistrationRequest', __)
     },
-    RegistrationConfirmFail: (__/* , followUp */) => {
+    RegistrationConfirmFail: (__/* , fw */) => {
       console.log('RegistrationConfirmFail', __)
     },
-    RegistrationConfirmationSent: (__/* , followUp */) => {
+    RegistrationConfirmationSent: (__/* , fw */) => {
       console.log('RegistrationConfirmationSent', __)
     },
-    RegistrationConfirmed: (__/* , followUp */) => {
+    RegistrationConfirmed: (__/* , fw */) => {
       console.log('RegistrationConfirmed', __)
     },
-    RegistrationEmailIsUnreachable: (__/* , followUp */) => {
+    RegistrationEmailIsUnreachable: (__/* , fw */) => {
       console.log('RegistrationEmailIsUnreachable', __)
     },
-    RegistrationInCharge: (__/* , followUp */) => {
+    RegistrationInCharge: (__/* , fw */) => {
       console.log('RegistrationInCharge', __)
     },
-    RegistrationRequest: async (request, followUp) => {
+    RegistrationRequest: async (request, fw) => {
       console.log('RegistrationRequest', request)
       const response = await _.registerRequest(request)
       if ('number' === typeof response) {
-        return Array.of(['RegistrationRequestFail', { ...request, reason: response }])
+        fw('RegistrationRequestFail', { ...request, reason: response })
       } else {
-        followUp('RegistrationInCharge', { ...request, registrationRequestId: response })
+        fw('RegistrationInCharge', { ...request, registrationRequestId: response })
       }
     },
-    RegistrationRequestFail: (__/* , followUp */) => {
+    RegistrationRequestFail: (__/* , fw */) => {
       console.log('RegistrationRequestFail', __)
     },
-    ScheduleConfirmationTimeout: (__/* , followUp */) => {
+    ScheduleConfirmationTimeout: (__/* , fw */) => {
       console.log('ScheduleConfirmationTimeout', __)
     }
   }

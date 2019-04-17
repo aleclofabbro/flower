@@ -50,10 +50,6 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spread = (this && this.__spread) || function () {
-    for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
-    return ar;
-};
 var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 var events_1 = require("events");
@@ -122,29 +118,21 @@ exports.createDomain = function (useCase, opts) {
     var unsubscribe = sigNames.reduce(function (unsubs, sigName) {
         var _a;
         var handler = function (signal, meta) { return __awaiter(_this, void 0, void 0, function () {
-            var useCaseNode, followUp, followups;
+            var useCaseNode, followUp;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        useCaseNode = useCase[sigName];
-                        followUp = function () {
-                            var args = [];
-                            for (var _i = 0; _i < arguments.length; _i++) {
-                                args[_i] = arguments[_i];
-                            }
-                            if (args.length !== 0) {
-                                var _a = __read(args, 2), fwSigName = _a[0], signal_1 = _a[1];
-                                signalOut(fwSigName, signal_1, meta);
-                            }
-                        };
-                        return [4 /*yield*/, useCaseNode(signal, followUp)];
-                    case 1:
-                        followups = _a.sent();
-                        if (followups) {
-                            followups.forEach(function (followup) { return followUp.apply(void 0, __spread(followup)); });
-                        }
-                        return [2 /*return*/];
-                }
+                useCaseNode = useCase[sigName];
+                followUp = function () {
+                    var args = [];
+                    for (var _i = 0; _i < arguments.length; _i++) {
+                        args[_i] = arguments[_i];
+                    }
+                    if (args.length !== 0) {
+                        var _a = __read(args, 2), fwSigName = _a[0], signal_1 = _a[1];
+                        signalOut(fwSigName, signal_1, meta);
+                    }
+                };
+                useCaseNode(signal, followUp);
+                return [2 /*return*/];
             });
         }); };
         inSignals.on(sigName, handler);

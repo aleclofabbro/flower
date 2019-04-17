@@ -88,10 +88,8 @@ export const createDomain = <Sigs, Flw extends Flow<Sigs>>(useCase: UseCase<Sigs
         }
       }
 
-      const followups = await useCaseNode(signal, followUp)
-      if (followups) {
-        followups.forEach(followup => followUp(...followup))
-      }
+      useCaseNode(signal, followUp)
+
     }
 
     inSignals.on(sigName as string, handler)
