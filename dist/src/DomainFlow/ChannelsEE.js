@@ -73,7 +73,7 @@ exports.createDomain = function (domainFlow, opts) {
         var target = outMessages;
         var targetAll = outMessagesAll;
         if (opts.shortCircuit) {
-            if ('boolean' === typeof opts.shortCircuit || opts.shortCircuit.find(function (_) { return msgName === _; })) {
+            if (opts.shortCircuit === true || opts.shortCircuit.find(function (_) { return msgName === _; })) {
                 target = inMessages;
                 targetAll = inMessagesAll;
             }

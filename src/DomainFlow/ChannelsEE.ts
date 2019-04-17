@@ -29,7 +29,7 @@ export const createDomain = <Msgs, Flw extends Flow<Msgs>>(domainFlow: DomainFlo
     let target = outMessages
     let targetAll = outMessagesAll
     if (opts.shortCircuit) {
-      if ('boolean' === typeof opts.shortCircuit || opts.shortCircuit.find(_ => msgName === _)) {
+      if (opts.shortCircuit === true || opts.shortCircuit.find(_ => msgName === _)) {
         target = inMessages
         targetAll = inMessagesAll
       }

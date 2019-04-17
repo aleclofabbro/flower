@@ -29,17 +29,21 @@ export interface Messages {
 
 export interface Flow {
   RegistrationRequest: ['RegistrationRequestFail', 'RegistrationInCharge']
+
   RegistrationInCharge: ['AttemptSendRegistrationConfirmation']
   RegistrationConfirmationSent: ['ScheduleConfirmationTimeout']
   RegistrationEmailIsUnreachable: ['DeleteRegistrationRequest']
   ConfirmationWaitTimeout: ['AttemptSendRegistrationConfirmation', 'DeleteRegistrationRequest']
+
   ConfirmRegistrationRequest: ['RegistrationConfirmFail', 'RegistrationConfirmed']
+
   AttemptSendRegistrationConfirmation: []
   DeleteRegistrationRequest: []
+  ScheduleConfirmationTimeout: []
+
   RegistrationConfirmFail: []
   RegistrationConfirmed: []
   RegistrationRequestFail: []
-  ScheduleConfirmationTimeout: []
 }
 
 export type UserRegistrationDomainFlow = DomainFlow<Messages, Flow>

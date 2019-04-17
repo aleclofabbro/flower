@@ -1,28 +1,8 @@
 export type Follows<T extends keyof Messages, Messages, F extends Flow<Messages>> = (...followsTuple: FollowsTuple<T, Messages, F>) => unknown
-// export type NodeReturnType<T extends keyof Messages, Messages, F extends Flow<Messages>> =
-//   | void | Promise<void>
-//   | FollowsTuple<T, Messages, F>[]
-//   | Promise<FollowsTuple<T, Messages, F>[]>
 
 export type DomainFlow<Messages, F extends Flow<Messages>> = {
   [T in keyof Messages]: (message: Messages[T], followup: Follows<T, Messages, F>) => unknown // NodeReturnType<T, Messages, F>
 }
-
-// type TestDomainFlow = DomainFlow<{
-//   a: number
-//   b: string
-//   c: boolean
-// }, {
-//   a: ['b', 'c']
-//   b: ['c']
-//   c: ['a', 'b']
-// }>
-// const tuc: TestDomainFlow = {
-//   a: (message, followup) => followup('b', message.toFixed(2)),
-//   b: (message, followup) => followup('c', message.length === 0),
-//   c: (message, followup) => followup('a', message ? 1 : 0),
-// }
-// tuc.c
 
 export type Flow<Messages> = {
   [T in keyof Messages]: []

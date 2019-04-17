@@ -23,10 +23,10 @@ export interface Flow {
     ConfirmRegistrationRequest: ['RegistrationConfirmFail', 'RegistrationConfirmed'];
     AttemptSendRegistrationConfirmation: [];
     DeleteRegistrationRequest: [];
+    ScheduleConfirmationTimeout: [];
     RegistrationConfirmFail: [];
     RegistrationConfirmed: [];
     RegistrationRequestFail: [];
-    ScheduleConfirmationTimeout: [];
 }
 export declare type UserRegistrationDomainFlow = DomainFlow<Messages, Flow>;
 export default UserRegistrationDomainFlow;
