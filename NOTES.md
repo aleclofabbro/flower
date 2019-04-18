@@ -1,0 +1,2 @@
+- [ ] gestione errori nei nodi
+- [ ] track flow msgs
