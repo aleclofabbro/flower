@@ -16,7 +16,7 @@ var tuc = {
         setTimeout(function () { return followup('a', message ? 1 : 0); }, 1400);
     },
 };
-exports.domain = ChannelsEE_1.createDomain(tuc, { shortCircuit: ['a', 'b'] });
+exports.domain = ChannelsEE_1.createDomain(tuc, { shortCircuit: true }); //['a', 'b'] })
 exports.domain.probeInAll(console.log.bind(null, '\n\nprobeInAll'));
 exports.domain.probeOutAll(console.log.bind(null, '\n\nprobeOutAll'));
 exports.domain.messageIn('a', 1);

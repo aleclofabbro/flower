@@ -9,18 +9,20 @@ export type Flow<Messages> = {
   | [keyof Messages]
   | [keyof Messages, keyof Messages]
   | [keyof Messages, keyof Messages, keyof Messages]
+  | [keyof Messages, keyof Messages, keyof Messages, keyof Messages]
+  | [keyof Messages, keyof Messages, keyof Messages, keyof Messages, keyof Messages]
 }
 
 export type FollowsTuple<T extends keyof Messages, Messages, FC extends Flow<Messages>> =
   // 0
-  FC[T] extends [] ? [] :
-
+  FC[T] extends [] ? []
+  :
   // 1
   FC[T] extends [keyof Messages] ?
   | [
     FC[T][0], Messages[FC[T][0]]
-  ] :
-
+  ]
+  :
   // 2
   FC[T] extends [keyof Messages, keyof Messages] ?
   | [
@@ -28,10 +30,14 @@ export type FollowsTuple<T extends keyof Messages, Messages, FC extends Flow<Mes
   ]
   | [
     FC[T][1], Messages[FC[T][1]]
-  ] :
-
+  ]
+  :
   // 3
-  FC[T] extends [keyof Messages, keyof Messages, keyof Messages] ?
+  FC[T] extends [
+    keyof Messages,
+    keyof Messages,
+    keyof Messages
+  ] ?
   | [
     FC[T][0], Messages[FC[T][0]]
   ]
@@ -40,7 +46,49 @@ export type FollowsTuple<T extends keyof Messages, Messages, FC extends Flow<Mes
   ]
   | [
     FC[T][2], Messages[FC[T][2]]
-  ] :
-
-  //
-  never  
+  ]
+  :
+  // 4
+  FC[T] extends [
+    keyof Messages,
+    keyof Messages,
+    keyof Messages,
+    keyof Messages
+  ] ?
+  | [
+    FC[T][0], Messages[FC[T][0]]
+  ]
+  | [
+    FC[T][1], Messages[FC[T][1]]
+  ]
+  | [
+    FC[T][2], Messages[FC[T][2]]
+  ]
+  | [
+    FC[T][3], Messages[FC[T][3]]
+  ]
+  :
+  // 5
+  FC[T] extends [
+    keyof Messages,
+    keyof Messages,
+    keyof Messages,
+    keyof Messages,
+    keyof Messages
+  ] ?
+  | [
+    FC[T][0], Messages[FC[T][0]]
+  ]
+  | [
+    FC[T][1], Messages[FC[T][1]]
+  ]
+  | [
+    FC[T][2], Messages[FC[T][2]]
+  ]
+  | [
+    FC[T][3], Messages[FC[T][3]]
+  ]
+  | [
+    FC[T][4], Messages[FC[T][4]]
+  ]
+  : never  

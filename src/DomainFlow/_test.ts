@@ -26,7 +26,7 @@ const tuc: TestDomainFlow = {
   },
 }
 
-export const domain = createDomain(tuc, { shortCircuit: ['a', 'b'] })
+export const domain = createDomain(tuc, { shortCircuit: true })//['a', 'b'] })
 domain.probeInAll(console.log.bind(null, '\n\nprobeInAll'))
 domain.probeOutAll(console.log.bind(null, '\n\nprobeOutAll'))
 domain.messageIn('a', 1)
