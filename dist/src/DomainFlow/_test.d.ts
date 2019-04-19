@@ -1,38 +1,23 @@
-export declare const domain: {
-    probeIn: <MsgName extends "b" | "c" | "a">(msgName: MsgName, probe: (message: {
-        a: number;
-        b: string;
-        c: boolean;
-    }[MsgName], meta: import("./ChannelsEE").Meta) => unknown) => () => import("events").EventEmitter;
-    probeOut: <MsgName extends "b" | "c" | "a">(msgName: MsgName, probe: (message: {
-        a: number;
-        b: string;
-        c: boolean;
-    }[MsgName], meta: import("./ChannelsEE").Meta) => unknown) => () => import("events").EventEmitter;
-    probeInAll: (probe: <MsgName extends "b" | "c" | "a">(msgName: MsgName, message: {
-        a: number;
-        b: string;
-        c: boolean;
-    }[MsgName], meta: import("./ChannelsEE").Meta) => unknown) => () => import("events").EventEmitter;
-    probeOutAll: (probe: <MsgName extends "b" | "c" | "a">(msgName: MsgName, message: {
-        a: number;
-        b: string;
-        c: boolean;
-    }[MsgName], meta: import("./ChannelsEE").Meta) => unknown) => () => import("events").EventEmitter;
-    messageOut: <MsgName extends "b" | "c" | "a">(msgName: MsgName, message: {
-        a: number;
-        b: string;
-        c: boolean;
-    }[MsgName], meta?: import("./ChannelsEE").Meta) => void;
-    messageIn: <MsgName extends "b" | "c" | "a">(msgName: MsgName, message: {
-        a: number;
-        b: string;
-        c: boolean;
-    }[MsgName], meta?: import("./ChannelsEE").Meta) => void;
-    unsubscribe: {
-        b: () => unknown;
-        c: () => unknown;
-        a: () => unknown;
-    };
-};
+import { DomainFlow } from '.';
+declare type TestDomainFlow = DomainFlow<{
+    a: number;
+    b: string;
+    c: boolean;
+}, {
+    a: ['b', 'c'];
+    b: ['c', 'a'];
+    c: ['a', 'b'];
+}>;
+export declare const tuc: TestDomainFlow;
+export declare const domain: import("./ChannelsEE").Domain<{
+    a: number;
+    b: string;
+    c: boolean;
+}, {
+    a: ["b", "c"];
+    b: ["c", "a"];
+    c: ["a", "b"];
+}>;
+export declare const send: () => void;
+export {};
 //# sourceMappingURL=_test.d.ts.map

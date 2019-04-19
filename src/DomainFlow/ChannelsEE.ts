@@ -11,14 +11,25 @@ const newMeta = (): Meta => ({
 }
 )
 const SIG_ALL_NAME = '*'
-interface Opts<Msgs> {
+export interface Opts<Msgs> {
   shortCircuit?: (keyof Msgs)[] | boolean
 }
-export const createDomain = <Msgs, Flw extends Flow<Msgs>>(domainFlow: DomainFlow<Msgs, Flw>, opts: Opts<Msgs> = {}) => {
+export interface Domain<Msgs, Flw extends Flow<Msgs>> {
+  probeIn: <MsgName extends keyof Msgs>(msgName: MsgName, probe: Probe<Msgs, MsgName>) => () => undefined;
+  probeOut: <MsgName extends keyof Msgs>(msgName: MsgName, probe: Probe<Msgs, MsgName>) => () => undefined;
+  probeInAll: (probe: ProbeAll) => () => undefined;
+  probeOutAll: (probe: ProbeAll) => () => undefined;
+  messageOut: <MsgName extends keyof Msgs>(msgName: MsgName, message: Msgs[MsgName], meta?: Meta) => void;
+  messageIn: <MsgName extends keyof Msgs>(msgName: MsgName, message: Msgs[MsgName], meta?: Meta) => void;
+  unsubscribe: { [N in keyof Msgs]: () => unknown; };
+  domainFlow: DomainFlow<Msgs, Flw>;
+}
+type Probe<Msgs, MsgName extends keyof Msgs> = (message: Msgs[MsgName], meta: Meta) => unknown
+type ProbeAll = <Msgs, MsgName extends keyof Msgs>(msgName: MsgName, message: Msgs[MsgName], meta: Meta) => unknown
+
+export const createDomain = <Msgs, Flw extends Flow<Msgs>>(domainFlow: DomainFlow<Msgs, Flw>, opts: Opts<Msgs> = {}): Domain<Msgs, Flw> => {
   type MsgNames = keyof Msgs
   // type UCase = DomainFlow<Msgs, Flw>
-  type Probe<MsgName extends keyof Msgs> = (message: Msgs[MsgName], meta: Meta) => unknown
-  type ProbeAll = <MsgName extends keyof Msgs>(msgName: MsgName, message: Msgs[MsgName], meta: Meta) => unknown
   const outMessages = new EventEmitter()
   const outMessagesAll = new EventEmitter()
   const inMessages = new EventEmitter()
@@ -48,14 +59,14 @@ export const createDomain = <Msgs, Flw extends Flow<Msgs>>(domainFlow: DomainFlo
   const probeFor = (emitter: EventEmitter) =>
     <MsgName extends MsgNames>(
       msgName: MsgName,
-      probe: Probe<MsgName>
+      probe: Probe<Msgs, MsgName>
     ) => {
       if ('string' !== typeof msgName) { throw `probeFor : Only string msgNames - msgName:${msgName}` }
       const handler = (message: Msgs[MsgName], meta: Meta) => {
         probe(message, meta)
       }
       emitter.on(msgName as string, handler)
-      return () => emitter.off(msgName as string, handler)
+      return () => (emitter.off(msgName as string, handler), void 0)
     }
 
   const probeForAll = (emitterAll: EventEmitter) =>
@@ -66,7 +77,7 @@ export const createDomain = <Msgs, Flw extends Flow<Msgs>>(domainFlow: DomainFlo
         probe(msgName, message, meta)
       }
       emitterAll.on(SIG_ALL_NAME, handler)
-      return () => emitterAll.off(SIG_ALL_NAME, handler)
+      return () => (emitterAll.off(SIG_ALL_NAME, handler), void 0)
     }
 
   const probeIn = probeFor(inMessages)
@@ -99,13 +110,15 @@ export const createDomain = <Msgs, Flw extends Flow<Msgs>>(domainFlow: DomainFlo
       })
   }, {} as { [N in MsgNames]: () => unknown })
 
-  return {
+  const obj = {
     probeIn,
     probeOut,
     probeInAll,
     probeOutAll,
     messageOut,
     messageIn,
-    unsubscribe
+    unsubscribe,
+    domainFlow
   }
+  return obj
 }

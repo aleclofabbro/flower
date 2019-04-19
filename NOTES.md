@@ -1,2 +1,5 @@
-- [ ] gestione errori nei nodi
-- [ ] track flow msgs
+- [ ] Domain|Adapter : gestione errori nei nodi 
+- [ ] Domain : eliminare outMessageAll e inMessageAll
+- [ ] Domain : esportare funzione tipo get('msgName'):StrictEventEmitter<MsgName, Msgs[MsgName]>
+- [ ] Adapter : track flow msgs 
+- [ ] Test : make some

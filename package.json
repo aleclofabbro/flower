@@ -11,6 +11,8 @@
   "dependencies": {
     "@cycle/dom": "^22.3.0",
     "@cycle/run": "^5.2.0",
+    "@types/amqplib": "^0.5.11",
+    "amqplib": "^0.5.3",
     "rxjs": "^6.4.0"
   },
   "devDependencies": {

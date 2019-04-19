@@ -61,6 +61,7 @@ var newMeta = function () { return ({
 var SIG_ALL_NAME = '*';
 exports.createDomain = function (domainFlow, opts) {
     if (opts === void 0) { opts = {}; }
+    // type UCase = DomainFlow<Msgs, Flw>
     var outMessages = new events_1.EventEmitter();
     var outMessagesAll = new events_1.EventEmitter();
     var inMessages = new events_1.EventEmitter();
@@ -98,7 +99,7 @@ exports.createDomain = function (domainFlow, opts) {
                 probe(message, meta);
             };
             emitter.on(msgName, handler);
-            return function () { return emitter.off(msgName, handler); };
+            return function () { return (emitter.off(msgName, handler), void 0); };
         };
     };
     var probeForAll = function (emitterAll) {
@@ -107,7 +108,7 @@ exports.createDomain = function (domainFlow, opts) {
                 probe(msgName, message, meta);
             };
             emitterAll.on(SIG_ALL_NAME, handler);
-            return function () { return emitterAll.off(SIG_ALL_NAME, handler); };
+            return function () { return (emitterAll.off(SIG_ALL_NAME, handler), void 0); };
         };
     };
     var probeIn = probeFor(inMessages);
@@ -140,14 +141,16 @@ exports.createDomain = function (domainFlow, opts) {
             _a[msgName] = function () { return inMessages.off(msgName, handler); },
             _a));
     }, {});
-    return {
+    var obj = {
         probeIn: probeIn,
         probeOut: probeOut,
         probeInAll: probeInAll,
         probeOutAll: probeOutAll,
         messageOut: messageOut,
         messageIn: messageIn,
-        unsubscribe: unsubscribe
+        unsubscribe: unsubscribe,
+        domainFlow: domainFlow
     };
+    return obj;
 };
 //# sourceMappingURL=ChannelsEE.js.map
