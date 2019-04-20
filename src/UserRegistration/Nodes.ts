@@ -1,4 +1,4 @@
-import UserRegistration from './DomainFlow';
+import UserRegistration from './UserRegistrationDomainFlow';
 import { Srv } from '../DomainFlow/OtherTypes';
 import {
   UserRegistrationRequest,

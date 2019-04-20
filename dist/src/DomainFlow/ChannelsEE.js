@@ -62,59 +62,21 @@ var SIG_ALL_NAME = '*';
 exports.createDomain = function (domainFlow, opts) {
     if (opts === void 0) { opts = {}; }
     // type UCase = DomainFlow<Msgs, Flw>
-    var outMessages = new events_1.EventEmitter();
-    var outMessagesAll = new events_1.EventEmitter();
-    var inMessages = new events_1.EventEmitter();
-    var inMessagesAll = new events_1.EventEmitter();
-    var messageOut = function (msgName, message, meta) {
-        if (meta === void 0) { meta = newMeta(); }
-        if ('string' !== typeof msgName) {
-            throw "messageOut : Only string msgNames - msgName:" + msgName + " message:" + message;
+    var eeOut = new events_1.EventEmitter();
+    var eeIn = new events_1.EventEmitter();
+    var followsOut = function (msgName, msg, meta) {
+        // if ('string' !== typeof msgName) { throw `messageOut : Only string msgNames - msgName:${msgName} message:${msg}` }
+        var target = eeOut;
+        if (opts.shortCircuit &&
+            (opts.shortCircuit === true ||
+                opts.shortCircuit.find(function (_) { return msgName === _; }))) {
+            target = eeIn;
         }
-        var target = outMessages;
-        var targetAll = outMessagesAll;
-        if (opts.shortCircuit) {
-            if (opts.shortCircuit === true || opts.shortCircuit.find(function (_) { return msgName === _; })) {
-                target = inMessages;
-                targetAll = inMessagesAll;
-            }
-        }
-        targetAll.emit(SIG_ALL_NAME, msgName, message, meta);
-        target.emit(msgName, message, meta);
+        target.emit(SIG_ALL_NAME, { msgName: msgName, msg: msg }, meta);
+        target.emit(
+        //@ts-ignore
+        msgName, msg, meta);
     };
-    var messageIn = function (msgName, message, meta) {
-        if (meta === void 0) { meta = newMeta(); }
-        if ('string' !== typeof msgName) {
-            throw "messageIn : Only string msgNames - msgName:" + msgName + " message:" + message;
-        }
-        inMessagesAll.emit(SIG_ALL_NAME, msgName, message, meta);
-        inMessages.emit(msgName, message, meta);
-    };
-    var probeFor = function (emitter) {
-        return function (msgName, probe) {
-            if ('string' !== typeof msgName) {
-                throw "probeFor : Only string msgNames - msgName:" + msgName;
-            }
-            var handler = function (message, meta) {
-                probe(message, meta);
-            };
-            emitter.on(msgName, handler);
-            return function () { return (emitter.off(msgName, handler), void 0); };
-        };
-    };
-    var probeForAll = function (emitterAll) {
-        return function (probe) {
-            var handler = function (msgName, message, meta) {
-                probe(msgName, message, meta);
-            };
-            emitterAll.on(SIG_ALL_NAME, handler);
-            return function () { return (emitterAll.off(SIG_ALL_NAME, handler), void 0); };
-        };
-    };
-    var probeIn = probeFor(inMessages);
-    var probeOut = probeFor(outMessages);
-    var probeInAll = probeForAll(inMessagesAll);
-    var probeOutAll = probeForAll(outMessagesAll);
     var msgNames = Object.keys(domainFlow);
     var unsubscribe = msgNames.reduce(function (unsubs, msgName) {
         var _a;
@@ -127,30 +89,43 @@ exports.createDomain = function (domainFlow, opts) {
                     for (var _i = 0; _i < arguments.length; _i++) {
                         args[_i] = arguments[_i];
                     }
-                    if (args.length !== 0) {
-                        var _a = __read(args, 2), fwMsgName = _a[0], message_1 = _a[1];
-                        messageOut(fwMsgName, message_1, meta);
+                    var _a = __read(args, 2), fwMsgName = _a[0], message = _a[1];
+                    if (fwMsgName && message !== void 0) {
+                        followsOut(fwMsgName, message, meta);
                     }
                 };
                 domainFlowNode(message, follows);
                 return [2 /*return*/];
             });
         }); };
-        inMessages.on(msgName, handler);
+        eeIn.on(
+        //@ts-ignore
+        msgName, handler);
         return Object.assign(unsubs, (_a = {},
-            _a[msgName] = function () { return inMessages.off(msgName, handler); },
+            _a[msgName] = function () { return eeIn.off(
+            //@ts-ignore
+            msgName, handler); },
             _a));
     }, {});
-    var obj = {
-        probeIn: probeIn,
-        probeOut: probeOut,
-        probeInAll: probeInAll,
-        probeOutAll: probeOutAll,
-        messageOut: messageOut,
-        messageIn: messageIn,
+    var xput = function (_) { return ({
+        //@ts-ignore
+        on: function (name, handler) { return (_.on(name, handler), function () { return _.off(name, handler); }); },
+        //@ts-ignore
+        all: function (handler) { return (_.on('*', handler), function () { return _.off('*', handler); }); },
+        emit: function (nsgName, msg, meta) {
+            if (meta === void 0) { meta = newMeta(); }
+            //@ts-ignore
+            _.emit(nsgName, msg, meta);
+            //@ts-ignore
+            _.emit('*', { name: nsgName, msg: msg }, meta);
+            return meta;
+        }
+    }); };
+    return {
+        input: xput(eeIn),
+        output: xput(eeOut),
         unsubscribe: unsubscribe,
         domainFlow: domainFlow
     };
-    return obj;
 };
 //# sourceMappingURL=ChannelsEE.js.map

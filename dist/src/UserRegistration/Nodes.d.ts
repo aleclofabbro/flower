@@ -7,5 +7,5 @@ export declare const createDomainNodes: (_: {
     confirmRegistration: Srv<[RegistrationRecord], true | ConfirmationRequestFailReason>;
     sendRegistrationConfirmation: Srv<[RegistrationConfirmRecord], unknown>;
     scheduleConfirmationTimeout: Srv<[RegistrationConfirmRecord], unknown>;
-}) => import("../DomainFlow/DomainFlow").DomainFlow<import("./DomainFlow").Messages, import("./DomainFlow").Flow>;
+}) => import("../DomainFlow/DomainFlow").DomainFlow<import("./UserRegistrationDomainFlow").Messages, import("./UserRegistrationDomainFlow").Flow>;
 //# sourceMappingURL=Nodes.d.ts.map

@@ -8,94 +8,75 @@ export interface Meta {
 }
 const newMeta = (): Meta => ({
   id: id()
-}
-)
+})
+
+// type TypeUnion<T> = keyof T extends infer P ? // Introduce an extra type parameter P to distribute over
+//   P extends any ? { msgName: P, msg: T[P] } :  // Take each P and create the union member
+//   never : never;
+
+type TypeUnion<T> = {
+  [P in keyof T]: { msgName: P, msg: T[P] }
+}[keyof T]
 const SIG_ALL_NAME = '*'
+// type EEType<Msgs> = StrictEventEmitter<EventEmitter, {
+//   [T in keyof Msgs]: (msg: Msgs[T], meta: Meta) => void
+// } & {
+//   '*': (_: TypeUnion<Msgs>, meta: Meta) => void,
+// }>
+
+
 export interface Opts<Msgs> {
   shortCircuit?: (keyof Msgs)[] | boolean
 }
-export interface Domain<Msgs, Flw extends Flow<Msgs>> {
-  probeIn: <MsgName extends keyof Msgs>(msgName: MsgName, probe: Probe<Msgs, MsgName>) => () => undefined;
-  probeOut: <MsgName extends keyof Msgs>(msgName: MsgName, probe: Probe<Msgs, MsgName>) => () => undefined;
-  probeInAll: (probe: ProbeAll) => () => undefined;
-  probeOutAll: (probe: ProbeAll) => () => undefined;
-  messageOut: <MsgName extends keyof Msgs>(msgName: MsgName, message: Msgs[MsgName], meta?: Meta) => void;
-  messageIn: <MsgName extends keyof Msgs>(msgName: MsgName, message: Msgs[MsgName], meta?: Meta) => void;
-  unsubscribe: { [N in keyof Msgs]: () => unknown; };
-  domainFlow: DomainFlow<Msgs, Flw>;
-}
-type Probe<Msgs, MsgName extends keyof Msgs> = (message: Msgs[MsgName], meta: Meta) => unknown
-type ProbeAll = <Msgs, MsgName extends keyof Msgs>(msgName: MsgName, message: Msgs[MsgName], meta: Meta) => unknown
+export interface EE<Msgs> {
+  emit: <K extends keyof Msgs>(name: K, msg: Msgs[K], meta?: Meta) => Meta
 
-export const createDomain = <Msgs, Flw extends Flow<Msgs>>(domainFlow: DomainFlow<Msgs, Flw>, opts: Opts<Msgs> = {}): Domain<Msgs, Flw> => {
+  on: <K extends keyof Msgs>(name: K, handl: (msg: Msgs[K], meta: Meta) => unknown) => () => unknown
+  all: (handl: (msg: TypeUnion<Msgs>, meta: Meta) => unknown) => () => unknown
+}
+export interface Domain<Msgs, Flw extends Flow<Msgs>> {
+  input: EE<Msgs>
+  output: EE<Msgs>
+  unsubscribe: { [N in keyof Msgs]: () => unknown; }
+  domainFlow: DomainFlow<Msgs, Flw>
+}
+
+export const createDomain = <Msgs extends { [k: string]: any }, Flw extends Flow<Msgs>>(domainFlow: DomainFlow<Msgs, Flw>, opts: Opts<Msgs> = {}): Domain<Msgs, Flw> => {
   type MsgNames = keyof Msgs
   // type UCase = DomainFlow<Msgs, Flw>
-  const outMessages = new EventEmitter()
-  const outMessagesAll = new EventEmitter()
-  const inMessages = new EventEmitter()
-  const inMessagesAll = new EventEmitter()
+  const eeOut = new EventEmitter()
+  const eeIn = new EventEmitter()
 
-  const messageOut = <MsgName extends MsgNames>(msgName: MsgName, message: Msgs[MsgName], meta = newMeta()) => {
-    if ('string' !== typeof msgName) { throw `messageOut : Only string msgNames - msgName:${msgName} message:${message}` }
-    let target = outMessages
-    let targetAll = outMessagesAll
-    if (opts.shortCircuit) {
-      if (opts.shortCircuit === true || opts.shortCircuit.find(_ => msgName === _)) {
-        target = inMessages
-        targetAll = inMessagesAll
-      }
+  const followsOut = <MsgName extends MsgNames>(msgName: MsgName, msg: Msgs[MsgName], meta: Meta) => {
+    // if ('string' !== typeof msgName) { throw `messageOut : Only string msgNames - msgName:${msgName} message:${msg}` }
+    let target = eeOut
+    if (
+      opts.shortCircuit &&
+      (
+        opts.shortCircuit === true ||
+        opts.shortCircuit.find(_ => msgName === _)
+      )
+    ) {
+      target = eeIn
     }
-    targetAll.emit(SIG_ALL_NAME, msgName as string, message, meta)
-    target.emit(msgName as string, message, meta)
-
+    target.emit(SIG_ALL_NAME, { msgName, msg }, meta)
+    target.emit(
+      //@ts-ignore
+      msgName,
+      msg, meta)
   }
 
-  const messageIn = <MsgName extends MsgNames>(msgName: MsgName, message: Msgs[MsgName], meta = newMeta()) => {
-    if ('string' !== typeof msgName) { throw `messageIn : Only string msgNames - msgName:${msgName} message:${message}` }
-    inMessagesAll.emit(SIG_ALL_NAME, msgName as string, message, meta)
-    inMessages.emit(msgName as string, message, meta)
-  }
-
-  const probeFor = (emitter: EventEmitter) =>
-    <MsgName extends MsgNames>(
-      msgName: MsgName,
-      probe: Probe<Msgs, MsgName>
-    ) => {
-      if ('string' !== typeof msgName) { throw `probeFor : Only string msgNames - msgName:${msgName}` }
-      const handler = (message: Msgs[MsgName], meta: Meta) => {
-        probe(message, meta)
-      }
-      emitter.on(msgName as string, handler)
-      return () => (emitter.off(msgName as string, handler), void 0)
-    }
-
-  const probeForAll = (emitterAll: EventEmitter) =>
-    (
-      probe: ProbeAll
-    ) => {
-      const handler = <MsgName extends MsgNames>(msgName: MsgName, message: Msgs[MsgName], meta: Meta) => {
-        probe(msgName, message, meta)
-      }
-      emitterAll.on(SIG_ALL_NAME, handler)
-      return () => (emitterAll.off(SIG_ALL_NAME, handler), void 0)
-    }
-
-  const probeIn = probeFor(inMessages)
-  const probeOut = probeFor(outMessages)
-  const probeInAll = probeForAll(inMessagesAll)
-  const probeOutAll = probeForAll(outMessagesAll)
 
   const msgNames = Object.keys(domainFlow) as MsgNames[]
   const unsubscribe = msgNames.reduce<{ [N in MsgNames]: () => unknown }>((unsubs, msgName) => {
     type MsgName = typeof msgName
     const handler = async (message: Msgs[MsgName], meta: Meta) => {
 
-      //inMessagesAll.emit(SIG_ALL_NAME, msgName, message, meta)
       const domainFlowNode = domainFlow[msgName]
       const follows: Follows<MsgName, Msgs, Flw> = (...args) => {
-        if (args.length !== 0) {
-          const [fwMsgName, message] = args
-          messageOut(fwMsgName as any, message as any, meta)
+        const [fwMsgName, message] = args
+        if (fwMsgName && message !== void 0) {
+          followsOut(fwMsgName, message, meta)
         }
       }
 
@@ -103,22 +84,39 @@ export const createDomain = <Msgs, Flw extends Flow<Msgs>>(domainFlow: DomainFlo
 
     }
 
-    inMessages.on(msgName as string, handler)
+    eeIn.on(
+      //@ts-ignore
+      msgName,
+      handler)
     return Object.assign(
       unsubs, {
-        [msgName]: () => inMessages.off(msgName as string, handler)
+        [msgName]: () => eeIn.off(
+          //@ts-ignore
+          msgName,
+          handler)
       })
   }, {} as { [N in MsgNames]: () => unknown })
 
-  const obj = {
-    probeIn,
-    probeOut,
-    probeInAll,
-    probeOutAll,
-    messageOut,
-    messageIn,
+  const xput = (_: EventEmitter): EE<Msgs> => ({
+    //@ts-ignore
+    on: (name, handler) => (_.on(name, handler), () => _.off(name, handler)),
+    //@ts-ignore
+    all: (handler) => (_.on('*', handler), () => _.off('*', handler)),
+    emit: (nsgName, msg, meta = newMeta()) => {
+      //@ts-ignore
+      _.emit(nsgName, msg, meta)
+      //@ts-ignore
+      _.emit('*', { name: nsgName, msg }, meta)
+      return meta
+    }
+  })
+
+  return {
+    input: xput(eeIn),
+    output: xput(eeOut),
     unsubscribe,
     domainFlow
   }
-  return obj
 }
+
+

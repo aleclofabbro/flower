@@ -5,7 +5,7 @@ import { Flow } from '../DomainFlow';
 export const adapt = async <Msgs, Flw extends Flow<Msgs>>(domain: Domain<Msgs, Flw>, channel: Channel) => {
 
   const exchanges = Object.keys(domain.domainFlow)
-  const queues = await Promise.all(exchanges.map(messageInName =>
+  const queues = (await Promise.all(exchanges.map(messageInName =>
     Promise.all([
       channel.assertExchange(messageInName, 'fanout'),
       channel.assertQueue('', {
@@ -15,15 +15,18 @@ export const adapt = async <Msgs, Flw extends Flow<Msgs>>(domain: Domain<Msgs, F
       .then(queueName => (channel.consume(queueName, (amqpMsg) => {
         if (amqpMsg) {
           const message = JSON.parse(amqpMsg.content.toString())
-          domain.messageIn(
+          domain.input.emit(
             //@ts-ignore
             messageInName,
-            message)
+            message, { id: amqpMsg.properties.messageId })
         }
-      }), queueName))))
-  domain.probeOutAll((msgName, msg) => {
+      }), [messageInName, queueName])))))
+    .reduce((mapped: object, [messageInName, queueName]) => ({ ...mapped, [messageInName]: queueName }), {} as { [K in keyof Msgs]: string })
+  domain.output.all(({ msg, msgName }, meta) => {
     //@ts-ignore
-    channel.publish(msgName, '', Buffer.from(JSON.stringify(msg)))
+    channel.publish(msgName, '', Buffer.from(JSON.stringify(msg)), {
+      messageId: meta.id
+    })
   })
   console.log(queues)
   return queues

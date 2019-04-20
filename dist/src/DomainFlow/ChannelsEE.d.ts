@@ -2,23 +2,30 @@ import { DomainFlow, Flow } from './DomainFlow';
 export interface Meta {
     id: string;
 }
+declare type TypeUnion<T> = {
+    [P in keyof T]: {
+        msgName: P;
+        msg: T[P];
+    };
+}[keyof T];
 export interface Opts<Msgs> {
     shortCircuit?: (keyof Msgs)[] | boolean;
 }
+export interface EE<Msgs> {
+    emit: <K extends keyof Msgs>(name: K, msg: Msgs[K], meta?: Meta) => Meta;
+    on: <K extends keyof Msgs>(name: K, handl: (msg: Msgs[K], meta: Meta) => unknown) => () => unknown;
+    all: (handl: (msg: TypeUnion<Msgs>, meta: Meta) => unknown) => () => unknown;
+}
 export interface Domain<Msgs, Flw extends Flow<Msgs>> {
-    probeIn: <MsgName extends keyof Msgs>(msgName: MsgName, probe: Probe<Msgs, MsgName>) => () => undefined;
-    probeOut: <MsgName extends keyof Msgs>(msgName: MsgName, probe: Probe<Msgs, MsgName>) => () => undefined;
-    probeInAll: (probe: ProbeAll) => () => undefined;
-    probeOutAll: (probe: ProbeAll) => () => undefined;
-    messageOut: <MsgName extends keyof Msgs>(msgName: MsgName, message: Msgs[MsgName], meta?: Meta) => void;
-    messageIn: <MsgName extends keyof Msgs>(msgName: MsgName, message: Msgs[MsgName], meta?: Meta) => void;
+    input: EE<Msgs>;
+    output: EE<Msgs>;
     unsubscribe: {
         [N in keyof Msgs]: () => unknown;
     };
     domainFlow: DomainFlow<Msgs, Flw>;
 }
-declare type Probe<Msgs, MsgName extends keyof Msgs> = (message: Msgs[MsgName], meta: Meta) => unknown;
-declare type ProbeAll = <Msgs, MsgName extends keyof Msgs>(msgName: MsgName, message: Msgs[MsgName], meta: Meta) => unknown;
-export declare const createDomain: <Msgs, Flw extends Flow<Msgs>>(domainFlow: DomainFlow<Msgs, Flw>, opts?: Opts<Msgs>) => Domain<Msgs, Flw>;
+export declare const createDomain: <Msgs extends {
+    [k: string]: any;
+}, Flw extends Flow<Msgs>>(domainFlow: DomainFlow<Msgs, Flw>, opts?: Opts<Msgs>) => Domain<Msgs, Flw>;
 export {};
 //# sourceMappingURL=ChannelsEE.d.ts.map

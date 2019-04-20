@@ -30,4 +30,4 @@ export interface Flow {
 }
 export declare type UserRegistrationDomainFlow = DomainFlow<Messages, Flow>;
 export default UserRegistrationDomainFlow;
-//# sourceMappingURL=DomainFlow.d.ts.map
+//# sourceMappingURL=UserRegistrationDomainFlow.d.ts.map

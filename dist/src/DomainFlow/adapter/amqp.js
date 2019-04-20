@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -71,17 +82,25 @@ exports.adapt = function (domain, channel) { return __awaiter(_this, void 0, voi
                             .then(function (queueName) { return (channel.consume(queueName, function (amqpMsg) {
                             if (amqpMsg) {
                                 var message = JSON.parse(amqpMsg.content.toString());
-                                domain.messageIn(
+                                domain.input.emit(
                                 //@ts-ignore
-                                messageInName, message);
+                                messageInName, message, { id: amqpMsg.properties.messageId });
                             }
-                        }), queueName); });
+                        }), [messageInName, queueName]); });
                     }))];
             case 1:
-                queues = _a.sent();
-                domain.probeOutAll(function (msgName, msg) {
+                queues = (_a.sent())
+                    .reduce(function (mapped, _a) {
+                    var _b = __read(_a, 2), messageInName = _b[0], queueName = _b[1];
+                    var _c;
+                    return (__assign({}, mapped, (_c = {}, _c[messageInName] = queueName, _c)));
+                }, {});
+                domain.output.all(function (_a, meta) {
+                    var msg = _a.msg, msgName = _a.msgName;
                     //@ts-ignore
-                    channel.publish(msgName, '', Buffer.from(JSON.stringify(msg)));
+                    channel.publish(msgName, '', Buffer.from(JSON.stringify(msg)), {
+                        messageId: meta.id
+                    });
                 });
                 console.log(queues);
                 return [2 /*return*/, queues];

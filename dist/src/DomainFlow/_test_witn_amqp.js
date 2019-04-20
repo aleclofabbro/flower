@@ -8,7 +8,6 @@ var _test_1 = require("./_test");
 var amqplib_1 = __importDefault(require("amqplib"));
 amqplib_1.default.connect({})
     .then(function (conn) { return conn.createChannel(); })
-    .then(function (channel) {
-    amqp_1.adapt(_test_1.domain, channel);
-});
+    .then(function (channel) { return amqp_1.adapt(_test_1.domain, channel); })
+    .then(_test_1.send);
 //# sourceMappingURL=_test_witn_amqp.js.map

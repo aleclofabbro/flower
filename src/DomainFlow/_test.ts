@@ -27,17 +27,28 @@ export const tuc: TestDomainFlow = {
 
 export const domain = createDomain(tuc, {
   shortCircuit: false
-  // shortCircuit:  true
-  // shortCircuit: ['a', 'b'] 
+  // shortCircuit: true
+  // shortCircuit: ['a', 'b']
 })
 
 export const send = () => {
 
-  domain.probeInAll(console.log.bind(null, '\n\nprobeInAll'))
-  domain.probeOutAll(console.log.bind(null, '\n\nprobeOutAll'))
-  domain.messageIn('a', 1)
-  setTimeout(() => domain.messageIn('b', '1001'), 1000)
-  setTimeout(() => domain.messageIn('c', true), 1000)
-}
+  domain.input.all((_, _meta) => {
+    if (_.msgName === 'a') {
+      _.msg
+    } else if (_.msgName === 'b') {
+      _.msg
+    } else if (_.msgName === 'c') {
+      _.msg
+    }
+  })
+  domain.input.on('a', (_msg, _mta) => { })
 
-setTimeout(send, 3000)
+  domain.input.all(console.log.bind(null, '\n\neeIn'))
+  domain.output.all(console.log.bind(null, '\n\neeOut'))
+  domain.input.emit(
+    'a',
+    1)
+  // setTimeout(() => domain.output.emit('b', '1001'), 1000)
+  // setTimeout(() => domain.output.emit('c', true), 1000)
+}

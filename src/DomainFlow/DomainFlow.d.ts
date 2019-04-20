@@ -1,6 +1,8 @@
 export type Follows<T extends keyof Messages, Messages, F extends Flow<Messages>> = (...followsTuple: FollowsTuple<T, Messages, F>) => unknown
 
-export type DomainFlow<Messages, F extends Flow<Messages>> = {
+export type STRMsg = { [k: string]: any }
+
+export type DomainFlow<Messages extends STRMsg, F extends Flow<Messages>> = {
   [T in keyof Messages]: (message: Messages[T], followup: Follows<T, Messages, F>) => unknown // NodeReturnType<T, Messages, F>
 }
 
@@ -13,7 +15,7 @@ export type Flow<Messages> = {
   | [keyof Messages, keyof Messages, keyof Messages, keyof Messages, keyof Messages]
 }
 
-export type FollowsTuple<T extends keyof Messages, Messages, FC extends Flow<Messages>> =
+export type FollowsTuple<T extends keyof Messages, Messages extends STRMsg, FC extends Flow<Messages>> =
   // 0
   FC[T] extends [] ? []
   :
