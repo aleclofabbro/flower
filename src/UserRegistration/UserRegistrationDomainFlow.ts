@@ -6,9 +6,9 @@ import {
   HasConfirmationRequestFailReason,
   HasRegistrationRequestId,
 } from './Types';
-import { DomainFlow } from '../DomainFlow';
-// import StrictEventEmitter from 'strict-event-emitter-types/types/src';
-// import { EventEmitter } from 'events';
+import {
+  DomainFlow
+} from '../DomainFlow';
 
 export interface Messages {
   RegistrationRequest: UserRegistrationRequest
@@ -47,10 +47,8 @@ export interface Flow {
   RegistrationConfirmed: []
   RegistrationRequestFail: []
 }
-// declare const ee:StrictEventEmitter<EventEmitter, Messages>
 
-// ee.emit('ConfirmationWaitTimeout',{email:'',performedAttempts:1,registrationRequestId:'',userName:''})
-// ee.on('ConfirmationWaitTimeout',_=>{})
+
 export type UserRegistrationDomainFlow = DomainFlow<Messages, Flow>
 
 export default UserRegistrationDomainFlow
