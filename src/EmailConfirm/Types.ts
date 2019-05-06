@@ -5,10 +5,10 @@ export type UserName = string
 export type Id = string
 
 export enum Status {
-  REQ_ACCEPTED,
-  WIP,
-  USER_CONFIRMED,
-  TIMEOUT_CONFIRM
+  REQ_ACCEPTED = "REQ_ACCEPTED",
+  WIP = "WIP",
+  USER_CONFIRMED = "USER_CONFIRMED",
+  TIMEOUT_CONFIRM = "TIMEOUT_CONFIRM"
 }
 export interface ProcessRecord {
   id: Id

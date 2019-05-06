@@ -1,17 +1,23 @@
-import { ShouldConfirmationProcessStart } from '../Tasks';
-import { Status } from '../Types';
+import { ShouldConfirmationProcessStart } from '../../Tasks';
+import { Status } from '../../Types';
 import { Coll } from './Types';
+import { ObjectID } from 'bson';
 
 
 export const shouldConfirmationProcessStart = (coll: Coll): ShouldConfirmationProcessStart => async (trigger) => {
+  const _id = ObjectID.createFromHexString(trigger.id)
+
   const resp = await coll.updateOne({
-    ...trigger,
-    status: Status.WIP,
+    _id,
+    status: { $in: [Status.WIP, Status.REQ_ACCEPTED] },
     $expr: {
       $lt: [{ $size: "$attempts" }, '$maxAttempts']
     },
   }, {
-      $push: { attempts: new Date() }
+      $push: { attempts: new Date() },
+      $set: {
+        status: Status.WIP
+      }
     })
   if (resp.modifiedCount === 1) {
     return {
@@ -19,7 +25,7 @@ export const shouldConfirmationProcessStart = (coll: Coll): ShouldConfirmationPr
       p: trigger
     }
   } else {
-    const record = await coll.findOne(trigger)
+    const record = await coll.findOne({ _id })
     if (!record) {
       return {
         t: 'NotFound',
@@ -34,7 +40,7 @@ export const shouldConfirmationProcessStart = (coll: Coll): ShouldConfirmationPr
         }
       }
     } else {
-      throw record
+      throw [record, resp]
     }
   }
 }

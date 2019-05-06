@@ -2,10 +2,10 @@ export declare type Email = string;
 export declare type UserName = string;
 export declare type Id = string;
 export declare enum Status {
-    REQ_ACCEPTED = 0,
-    WIP = 1,
-    USER_CONFIRMED = 2,
-    TIMEOUT_CONFIRM = 3
+    REQ_ACCEPTED = "REQ_ACCEPTED",
+    WIP = "WIP",
+    USER_CONFIRMED = "USER_CONFIRMED",
+    TIMEOUT_CONFIRM = "TIMEOUT_CONFIRM"
 }
 export interface ProcessRecord {
     id: Id;

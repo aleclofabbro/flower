@@ -1,10 +1,14 @@
-import { CheckEmailConfirmation } from '../Tasks';
-import { Status } from '../Types';
+import { CheckEmailConfirmation } from '../../Tasks';
+import { Status } from '../../Types';
 import { Coll } from './Types';
+import { ObjectID } from 'bson';
 
 export const checkEmailConfirmation = (coll: Coll): CheckEmailConfirmation => async (trigger) => {
+  const _id = ObjectID.createFromHexString(trigger.id)
+
   const resp = await coll.updateOne({
-    ...trigger,
+    _id,
+    email: trigger.email,
     status: Status.WIP
   }, {
       $set: {
@@ -15,7 +19,9 @@ export const checkEmailConfirmation = (coll: Coll): CheckEmailConfirmation => as
   if (resp.modifiedCount === 1) {
     return {
       t: 'UserConfirmed',
-      p: trigger
+      p: {
+        id: trigger.id
+      }
     }
   } else {
     return {

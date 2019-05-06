@@ -6,7 +6,7 @@ import { Task } from '../DomainFlow/Proc';
 export declare type TakeInCharge = Task<TakeInChargeTrigger, TakeInChargeOutcome>;
 export declare type TakeInChargeTrigger = Pick<ProcessRecord, 'email' | 'userName'>;
 export declare type TakeInChargeOutcome = {
-    InCharge: Pick<ProcessRecord, 'id' | 'email' | 'userName'>;
+    InCharge: Pick<ProcessRecord, 'id'>;
     Rejected: {
         reason: 'userAlreadyExists' | 'emailRegistered';
     };
