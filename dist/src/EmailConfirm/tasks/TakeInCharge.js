@@ -49,7 +49,7 @@ var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 var Types_1 = require("../Types");
 exports.takeInCharge = function (coll, base) { return function (trigger) { return __awaiter(_this, void 0, void 0, function () {
-    var resp;
+    var resp, existingRecord;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, coll.insertOne(__assign({}, trigger, base, { attempts: [], sartedAt: new Date(), status: Types_1.Status.REQ_ACCEPTED }))];
@@ -60,30 +60,35 @@ exports.takeInCharge = function (coll, base) { return function (trigger) { retur
                         t: 'InCharge',
                         p: __assign({ id: resp.insertedId.toHexString() }, trigger)
                     }];
-            case 2: return [4 /*yield*/, coll.findOne({ email: trigger.email })];
+            case 2: return [4 /*yield*/, coll.findOne({ $or: [{ email: trigger.email }, { userName: trigger.userName }] })];
             case 3:
-                if (!_a.sent()) return [3 /*break*/, 4];
-                return [2 /*return*/, {
-                        t: 'Rejected',
-                        p: {
-                            reason: 'emailRegistered'
-                        }
-                    }];
-            case 4: return [4 /*yield*/, coll.findOne({ userName: trigger.userName })];
-            case 5:
-                if (_a.sent()) {
-                    return [2 /*return*/, {
-                            t: 'Rejected',
-                            p: {
-                                reason: 'userAlreadyExists'
-                            }
-                        }];
+                existingRecord = _a.sent();
+                if (existingRecord) {
+                    if (existingRecord.email === trigger.email) {
+                        return [2 /*return*/, {
+                                t: 'Rejected',
+                                p: {
+                                    reason: 'emailRegistered'
+                                }
+                            }];
+                    }
+                    else if (existingRecord.userName === trigger.userName) {
+                        return [2 /*return*/, {
+                                t: 'Rejected',
+                                p: {
+                                    reason: 'userAlreadyExists'
+                                }
+                            }];
+                    }
+                    else {
+                        throw "unknown error - trigger:" + JSON.stringify(trigger) + " existingRecord:" + JSON.stringify(existingRecord);
+                    }
                 }
                 else {
-                    throw 'unknown';
+                    throw "no existingRecord - unknown reason - trigger:" + JSON.stringify(trigger);
                 }
-                _a.label = 6;
-            case 6: return [2 /*return*/];
+                _a.label = 4;
+            case 4: return [2 /*return*/];
         }
     });
 }); }; };

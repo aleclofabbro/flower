@@ -1,4 +1,4 @@
-import { TaskNode, TaskNodeGen } from './Proc';
+import { Task, TaskNodeGen } from './Proc';
 
 type T =
   | { a: 'A' | 'B', d: number }
@@ -9,7 +9,7 @@ type O =
 
 
 declare const tng: TaskNodeGen<T, O>
-declare const tn: TaskNode<T, O>
+declare const tn: Task<T, O>
 
 tng()
 tng(['b'])

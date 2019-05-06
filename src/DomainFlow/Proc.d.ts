@@ -14,7 +14,7 @@ export type TaskOutcomes = {
   [outcomeType: string]: any
 }
 
-export type TaskNode<
+export type Task<
   Trigger,
   Outcomes extends TaskOutcomes
   > = <O extends keyof Outcomes>(trigger: Trigger) => Promise<OutcomeOf<Outcomes>>
@@ -24,5 +24,5 @@ export type TaskNodeGen<
   Outcomes extends TaskOutcomes
   > =
   <HT extends (keyof Trigger)[], HO extends (keyof Outcomes)[]>
-    (ho?: HO, ht?: HT) => TaskNode<Trigger, Outcomes>
+    (ho?: HO, ht?: HT) => Task<Trigger, Outcomes>
 

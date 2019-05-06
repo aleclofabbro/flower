@@ -20,23 +20,28 @@ export const takeInCharge = (coll: Coll, base: BaseRecord): TakeInCharge => asyn
       }
     }
   } else {
-    if (await coll.findOne({ email: trigger.email })) {
-      return {
-        t: 'Rejected',
-        p: {
-          reason: 'emailRegistered'
+    const existingRecord = await coll.findOne({ $or: [{ email: trigger.email }, { userName: trigger.userName }] })
+    if (existingRecord) {
+      if (existingRecord.email === trigger.email) {
+        return {
+          t: 'Rejected',
+          p: {
+            reason: 'emailRegistered'
+          }
         }
-      }
 
-    } else if (await coll.findOne({ userName: trigger.userName })) {
-      return {
-        t: 'Rejected',
-        p: {
-          reason: 'userAlreadyExists'
+      } else if (existingRecord.userName === trigger.userName) {
+        return {
+          t: 'Rejected',
+          p: {
+            reason: 'userAlreadyExists'
+          }
         }
+      } else {
+        throw `unknown error - trigger:${JSON.stringify(trigger)} existingRecord:${JSON.stringify(existingRecord)}`
       }
     } else {
-      throw 'unknown'
+      throw `no existingRecord - unknown reason - trigger:${JSON.stringify(trigger)}`
     }
   }
 }

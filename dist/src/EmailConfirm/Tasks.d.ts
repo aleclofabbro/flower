@@ -1,5 +1,9 @@
 import { ProcessRecord } from './Types';
-import { TaskNode } from '../DomainFlow/Proc';
+import { Task } from '../DomainFlow/Proc';
+/**
+ * TakeInCharge
+ */
+export declare type TakeInCharge = Task<TakeInChargeTrigger, TakeInChargeOutcome>;
 export declare type TakeInChargeTrigger = Pick<ProcessRecord, 'email' | 'userName'>;
 export declare type TakeInChargeOutcome = {
     InCharge: Pick<ProcessRecord, 'id' | 'email' | 'userName'>;
@@ -7,7 +11,9 @@ export declare type TakeInChargeOutcome = {
         reason: 'userAlreadyExists' | 'emailRegistered';
     };
 };
-export declare type TakeInCharge = TaskNode<TakeInChargeTrigger, TakeInChargeOutcome>;
+/**
+ * CheckEmailConfirmationTrigger
+ */
 export declare type CheckEmailConfirmationTrigger = Pick<ProcessRecord, 'email' | 'id'>;
 export declare type CheckEmailConfirmationOutcome = {
     UserConfirmed: Pick<ProcessRecord, 'id'>;
@@ -15,7 +21,10 @@ export declare type CheckEmailConfirmationOutcome = {
         reason: 'notFound';
     };
 };
-export declare type CheckEmailConfirmation = TaskNode<CheckEmailConfirmationTrigger, CheckEmailConfirmationOutcome>;
+export declare type CheckEmailConfirmation = Task<CheckEmailConfirmationTrigger, CheckEmailConfirmationOutcome>;
+/**
+ * ShouldConfirmationProcessStartTrigger
+ */
 export declare type ShouldConfirmationProcessStartTrigger = Pick<ProcessRecord, 'id'>;
 export declare type ShouldConfirmationProcessStartOutcome = {
     ShouldStart: Pick<ProcessRecord, 'id'>;
@@ -24,5 +33,5 @@ export declare type ShouldConfirmationProcessStartOutcome = {
         reason: 'maxAttemptReached';
     };
 };
-export declare type ShouldConfirmationProcessStart = TaskNode<ShouldConfirmationProcessStartTrigger, ShouldConfirmationProcessStartOutcome>;
+export declare type ShouldConfirmationProcessStart = Task<ShouldConfirmationProcessStartTrigger, ShouldConfirmationProcessStartOutcome>;
 //# sourceMappingURL=Tasks.d.ts.map
