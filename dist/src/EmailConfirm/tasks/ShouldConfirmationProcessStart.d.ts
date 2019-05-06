@@ -1,0 +1,2 @@
+export declare const shouldConfirmationProcessStart: (coll: import("mongodb").Collection<Pick<import("../Types").ProcessRecord, "email" | "userName" | "sartedAt" | "attempts" | "maxAttempts" | "waitHours" | "status">>) => import("../../DomainFlow/Proc").TaskNode<Pick<import("../Types").ProcessRecord, "id">, import("../Tasks").ShouldConfirmationProcessStartOutcome>;
+//# sourceMappingURL=ShouldConfirmationProcessStart.d.ts.map

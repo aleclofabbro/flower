@@ -11,15 +11,18 @@ export declare type TakeInCharge = TaskNode<TakeInChargeTrigger, TakeInChargeOut
 export declare type CheckEmailConfirmationTrigger = Pick<ProcessRecord, 'email' | 'id'>;
 export declare type CheckEmailConfirmationOutcome = {
     UserConfirmed: Pick<ProcessRecord, 'id'>;
-    Failed: null;
+    Failed: {
+        reason: 'notFound';
+    };
 };
 export declare type CheckEmailConfirmation = TaskNode<CheckEmailConfirmationTrigger, CheckEmailConfirmationOutcome>;
-export declare type ConfirmationProcessStartTrigger = Pick<ProcessRecord, 'id'>;
-export declare type ConfirmationProcessStartOutcome = {
-    Started: Pick<ProcessRecord, 'id'>;
-    NotStarted: Pick<ProcessRecord, 'id'> & {
+export declare type ShouldConfirmationProcessStartTrigger = Pick<ProcessRecord, 'id'>;
+export declare type ShouldConfirmationProcessStartOutcome = {
+    ShouldStart: Pick<ProcessRecord, 'id'>;
+    NotFound: Pick<ProcessRecord, 'id'>;
+    ShouldNotStart: Pick<ProcessRecord, 'id'> & {
         reason: 'maxAttemptReached';
     };
 };
-export declare type ConfirmationProcessStart = TaskNode<ConfirmationProcessStartTrigger, ConfirmationProcessStartOutcome>;
+export declare type ShouldConfirmationProcessStart = TaskNode<ShouldConfirmationProcessStartTrigger, ShouldConfirmationProcessStartOutcome>;
 //# sourceMappingURL=Tasks.d.ts.map

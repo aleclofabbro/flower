@@ -15,30 +15,24 @@ export type TakeInCharge = TaskNode<TakeInChargeTrigger, TakeInChargeOutcome>
 export type CheckEmailConfirmationTrigger = Pick<ProcessRecord, 'email' | 'id'>
 export type CheckEmailConfirmationOutcome = {
   UserConfirmed: Pick<ProcessRecord, 'id'>
-  Failed: null
+  Failed: {
+    reason: 'notFound'
+  }
 }
 export type CheckEmailConfirmation = TaskNode<CheckEmailConfirmationTrigger, CheckEmailConfirmationOutcome>
 
 
-export type ConfirmationProcessStartTrigger = Pick<ProcessRecord, 'id'>
-export type ConfirmationProcessStartOutcome = {
-  Started: Pick<ProcessRecord, 'id'>
-  NotStarted: Pick<ProcessRecord, 'id'> & {
+export type ShouldConfirmationProcessStartTrigger = Pick<ProcessRecord, 'id'>
+export type ShouldConfirmationProcessStartOutcome = {
+  ShouldStart: Pick<ProcessRecord, 'id'>
+  NotFound: Pick<ProcessRecord, 'id'>
+  ShouldNotStart: Pick<ProcessRecord, 'id'> & {
     reason: 'maxAttemptReached'
   }
 }
-export type ConfirmationProcessStart = TaskNode<ConfirmationProcessStartTrigger, ConfirmationProcessStartOutcome>
+export type ShouldConfirmationProcessStart = TaskNode<ShouldConfirmationProcessStartTrigger, ShouldConfirmationProcessStartOutcome>
 
-// declare const cc: Tasks['checkEmailConfirmation']
-// cc({ email: '', id: '' }).then(_ => {
-//   if (_.t === 'Failed') {
-//     const {p:res} = _
-//     res
-//   } else {
-//     const {p:res} = _
-//     res
-//   }
-// })
+
 
 
 

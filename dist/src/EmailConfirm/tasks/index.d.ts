@@ -1,5 +1,4 @@
-import { TakeInCharge, ConfirmationProcessStart, CheckEmailConfirmation } from '../Tasks';
-export declare const checkEmailConfirmation: CheckEmailConfirmation;
-export declare const confirmationProcessStart: ConfirmationProcessStart;
-export declare const takeInCharge: TakeInCharge;
+export * from './CheckEmailConfirmation';
+export * from './ShouldConfirmationProcessStart';
+export * from './TakeInCharge';
 //# sourceMappingURL=index.d.ts.map

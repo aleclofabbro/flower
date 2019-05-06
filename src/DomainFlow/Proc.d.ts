@@ -1,4 +1,7 @@
-export type Srv<Req, Res> = (req: Req) => Promise<Res>
+export type Srv<Res, Req = void> =
+  Req extends void
+  ? () => Promise<Res>
+  : (req: Req) => Promise<Res>
 
 export type Headers = {
   [name: string]: string

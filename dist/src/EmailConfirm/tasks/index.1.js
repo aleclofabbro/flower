@@ -45,39 +45,98 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.create = function () {
-    return {
-        checkEmailConfirmation: function (trigger) {
-            return __awaiter(this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    return [2 /*return*/, { t: 'Failed', p: null }];
-                });
-            });
-        },
-        confirmationProcessStart: function (trigger) {
-            return __awaiter(this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    return [2 /*return*/, __assign({ started: true }, trigger)];
-                });
-            });
-        },
-        takeInCharge: function (trigger) {
-            return __awaiter(this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    // return {
-                    //   id:'',
-                    //   inCharge:true,
-                    //   ...trigger
-                    // }
-                    trigger;
-                    return [2 /*return*/, {
-                            inCharge: false,
-                            reason: 'userAlreadyExists'
-                        }];
-                });
-            });
+var Types_1 = require("../Types");
+exports.checkEmailConfirmation = function (coll) { return function (trigger) { return __awaiter(_this, void 0, void 0, function () {
+    var resp;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, coll.updateOne(__assign({}, trigger, { status: Types_1.Status.WIP }), { $set: { status: Types_1.Status.USER_CONFIRMED } })];
+            case 1:
+                resp = _a.sent();
+                if (resp.modifiedCount === 1) {
+                    return [2 /*return*/, { t: 'UserConfirmed', p: trigger }];
+                }
+                else {
+                    return [2 /*return*/, { t: 'Failed', p: { reason: 'notFound' } }];
+                }
+                return [2 /*return*/];
         }
-    };
-};
+    });
+}); }; };
+exports.shouldConfirmationProcessStart = function (coll) { return function (trigger) { return __awaiter(_this, void 0, void 0, function () {
+    var resp, record;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, coll.updateOne(__assign({}, trigger, { status: Types_1.Status.WIP, $expr: { $lt: [{ $size: "$attempts" }, '$maxAttempts'] } }), { $push: { attempts: new Date() } })];
+            case 1:
+                resp = _a.sent();
+                if (!(resp.modifiedCount === 1)) return [3 /*break*/, 2];
+                return [2 /*return*/, {
+                        t: 'ShouldStart',
+                        p: trigger
+                    }];
+            case 2: return [4 /*yield*/, coll.findOne(trigger)];
+            case 3:
+                record = _a.sent();
+                if (!record) {
+                    return [2 /*return*/, {
+                            t: 'NotFound',
+                            p: trigger
+                        }];
+                }
+                else if (record.attempts.length >= record.maxAttempts) {
+                    return [2 /*return*/, {
+                            t: 'ShouldNotStart',
+                            p: __assign({}, trigger, { reason: 'maxAttemptReached' })
+                        }];
+                }
+                else {
+                    throw record;
+                }
+                _a.label = 4;
+            case 4: return [2 /*return*/];
+        }
+    });
+}); }; };
+exports.takeInCharge = function (coll, base) { return function (trigger) { return __awaiter(_this, void 0, void 0, function () {
+    var resp;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, coll.insertOne(__assign({}, trigger, base, { attempts: [], sartedAt: new Date(), status: Types_1.Status.REQ_ACCEPTED }))];
+            case 1:
+                resp = _a.sent();
+                if (!(resp.insertedCount === 1)) return [3 /*break*/, 2];
+                return [2 /*return*/, {
+                        t: 'InCharge',
+                        p: __assign({ id: resp.insertedId.toHexString() }, trigger)
+                    }];
+            case 2: return [4 /*yield*/, coll.findOne({ email: trigger.email })];
+            case 3:
+                if (!_a.sent()) return [3 /*break*/, 4];
+                return [2 /*return*/, {
+                        t: 'Rejected',
+                        p: {
+                            reason: 'userAlreadyExists'
+                        }
+                    }];
+            case 4: return [4 /*yield*/, coll.findOne({ userName: trigger.userName })];
+            case 5:
+                if (_a.sent()) {
+                    return [2 /*return*/, {
+                            t: 'Rejected',
+                            p: {
+                                reason: 'userAlreadyExists'
+                            }
+                        }];
+                }
+                else {
+                    throw 'unknown';
+                }
+                _a.label = 6;
+            case 6: return [2 /*return*/];
+        }
+    });
+}); }; };
 //# sourceMappingURL=index.1.js.map

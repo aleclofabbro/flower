@@ -66,7 +66,7 @@ exports.takeInCharge = function (coll, base) { return function (trigger) { retur
                 return [2 /*return*/, {
                         t: 'Rejected',
                         p: {
-                            reason: 'userAlreadyExists'
+                            reason: 'emailRegistered'
                         }
                     }];
             case 4: return [4 /*yield*/, coll.findOne({ userName: trigger.userName })];
@@ -87,4 +87,4 @@ exports.takeInCharge = function (coll, base) { return function (trigger) { retur
         }
     });
 }); }; };
-//# sourceMappingURL=takeInCharge.js.map
+//# sourceMappingURL=TakeInCharge.js.map
