@@ -2,11 +2,10 @@
 import { ProcessRecord } from './Types';
 import { TaskNode } from '../DomainFlow/Proc';
 
-export type Tasks = {
-  takeInCharge: TaskNode<TakeInChargeTrigger, TakeInChargeOutcome>
-  checkEmailConfirmation: TaskNode<CheckEmailConfirmationTrigger, CheckEmailConfirmationOutcome>
-  confirmationProcessStart: TaskNode<ConfirmationProcessStartTrigger, ConfirmationProcessStartOutcome>
-}
+export type TakeInCharge = TaskNode<TakeInChargeTrigger, TakeInChargeOutcome>
+export type CheckEmailConfirmation = TaskNode<CheckEmailConfirmationTrigger, CheckEmailConfirmationOutcome>
+export type ConfirmationProcessStart = TaskNode<ConfirmationProcessStartTrigger, ConfirmationProcessStartOutcome>
+
 // declare const cc: Tasks['checkEmailConfirmation']
 // cc({ email: '', id: '' }).then(_ => {
 //   if (_.t === 'Failed') {

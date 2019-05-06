@@ -1,1 +1,1 @@
-export type Srv<Req, Res> = (req: Req) => Res | Promise<Res>
+export type Srv<Req extends any[], Res> = (...args: Req) => Res | Promise<Res>
