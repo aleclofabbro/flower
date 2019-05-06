@@ -1,37 +1,27 @@
-import { Services } from './Services';
-import { Process } from './Proc';
+import { Tasks } from './Tasks';
 
-export const create = (_: Services): Process => {
-
-  const start: Process['start'] = async (head, req) => {
-    const resp = await _.TakeInCharge({ head, ...req })
-    return resp
-  }
-
-  const tasks: Process['tasks'] = {
-    async checkConfirmation(_head) {
-      return {
-        t: 'Confirmed',
-        p: null
-      }
-    },
-    async checkResend(_head) {
-      return {
-        t: 'ReachedMaxAttempts',
-        p: null
-      }
-    },
-
-    async takeInCharge(_head) {
-      return {
-        t: 'InCharge',
-        p: null
-      }
-    },
-  }
-
+export const create = (): Tasks => {
   return {
-    start,
-    tasks
+    async checkEmailConfirmation(trigger) {
+      return { t: 'Failed', p: null }
+    },
+    async confirmationProcessStart(trigger) {
+      return {
+        started: true,
+        ...trigger
+      }
+    },
+    async takeInCharge(trigger) {
+      // return {
+      //   id:'',
+      //   inCharge:true,
+      //   ...trigger
+      // }
+      trigger
+      return {
+        inCharge: false,
+        reason: 'userAlreadyExists'
+      }
+    }
   }
 } 

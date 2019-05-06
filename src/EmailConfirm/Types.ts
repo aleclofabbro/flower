@@ -1,15 +1,12 @@
-import { ProcId } from '../DomainFlow/Proc';
 
 export type Email = string
 export type UserName = string
 
-export interface Starter {
-  userName: UserName
+export type Id = string
+export interface ProcessRecord {
+  id: Id
   email: Email
-}
-
-export interface State extends Starter {
-  procId: ProcId
+  userName: UserName
   sartedAt: Date
   attempts: Date[]
   maxAttempts: number

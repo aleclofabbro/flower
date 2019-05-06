@@ -1,12 +1,8 @@
-export type Srv<Req, Outcomes> = (req: Req) => Promise<OutcomeOf<Outcomes>>
-export type ProcId = string
+export type Srv<Req, Res> = (req: Req) => Promise<Res>
 
-export interface BaseHeaders {
-  procId: ProcId
-  fromProcId: ProcId
-  fromName: string
+export type Headers = {
+  [name: string]: string
 }
-
 type OutcomeOf<Outcomes> = {
   [P in keyof Outcomes]: { t: P, p: Outcomes[P] }
 }[keyof Outcomes]
@@ -14,16 +10,16 @@ type OutcomeOf<Outcomes> = {
 export type TaskOutcomes = {
   [outcomeType: string]: any
 }
-export type StartNode<Starter> = (head: BaseHeaders, req: Starter) => Promise<unknown>
-export type TaskNode<Outcomes extends TaskOutcomes> = (head: BaseHeaders) => Promise<OutcomeOf<Outcomes>>
-export type Tasks = {
-  [name: string]: TaskNode<any>
-}
 
-export interface Proc<
-  _StartNode extends StartNode<any>,
-  _Tasks extends Tasks
-  > {
-  start: _StartNode
-  tasks: _Tasks
-}
+export type TaskNode<
+  Trigger,
+  Outcomes extends TaskOutcomes
+  > = <O extends keyof Outcomes>(trigger: Trigger) => Promise<OutcomeOf<Outcomes>>
+
+export type TaskNodeGen<
+  Trigger,
+  Outcomes extends TaskOutcomes
+  > =
+  <HT extends (keyof Trigger)[], HO extends (keyof Outcomes)[]>
+    (ho?: HO, ht?: HT) => TaskNode<Trigger, Outcomes>
+
