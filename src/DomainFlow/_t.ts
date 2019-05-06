@@ -14,6 +14,6 @@ declare const tn: TaskNode<T, O>
 tng()
 tng(['b'])
 tng(['b'], ['d'])
-tn({ a: 'A', c: '', d: 2 }).then(p => {
+tn({ a: 'A', c: '', d: 2 }).then(_p => {
 
 })

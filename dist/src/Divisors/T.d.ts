@@ -1,4 +1,4 @@
-export declare type Y<Start extends {}, End extends {}, Blocks extends {
+export declare type Process<Start extends {}, End extends {}, Blocks extends {
     [t: string]: [any, {
         [t: string]: any;
     }];

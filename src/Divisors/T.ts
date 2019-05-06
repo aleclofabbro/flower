@@ -1,4 +1,4 @@
-export type Y<
+export type Process<
   Start extends {},
   End extends {},
   Blocks extends {
