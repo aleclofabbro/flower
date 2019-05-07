@@ -5,9 +5,9 @@ export interface Config {
     base: BaseRecord;
 }
 declare const tasks: (_: Config) => {
-    checkEmailConfirmation: import("../../../DomainFlow/Proc").Task<Pick<import("../../Types").ProcessRecord, "id" | "email">, import("../../Tasks").CheckEmailConfirmationOutcome>;
-    shouldConfirmationProcessStart: import("../../../DomainFlow/Proc").Task<Pick<import("../../Types").ProcessRecord, "id">, import("../../Tasks").ShouldConfirmationProcessStartOutcome>;
-    takeInCharge: import("../../../DomainFlow/Proc").Task<Pick<import("../../Types").ProcessRecord, "email" | "userName">, import("../../Tasks").TakeInChargeOutcome>;
+    checkEmailConfirmation: import("../../../lib/Task").Task<Pick<import("../../Types").ProcessRecord, "email" | "id">, import("../../Tasks").CheckEmailConfirmationOutcome>;
+    shouldConfirmationProcessStart: import("../../../lib/Task").Task<Pick<import("../../Types").ProcessRecord, "id">, import("../../Tasks").ShouldConfirmationProcessStartOutcome>;
+    takeInCharge: import("../../../lib/Task").Task<Pick<import("../../Types").ProcessRecord, "email" | "userName">, import("../../Tasks").TakeInChargeOutcome>;
 };
 export default tasks;
 //# sourceMappingURL=index.d.ts.map

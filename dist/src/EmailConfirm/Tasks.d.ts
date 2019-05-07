@@ -1,5 +1,5 @@
 import { ProcessRecord } from './Types';
-import { Task } from '../DomainFlow/Proc';
+import { Task } from '../lib/Task';
 /**
  * TakeInCharge
  */
