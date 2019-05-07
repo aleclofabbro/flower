@@ -30,7 +30,6 @@ import { CollSchema } from '../EmailConfirm/tasks/mongo/Types';
     },
     coll
   })
-
   //@ts-ignore
   global.tasks = tasks
   //@ts-ignore

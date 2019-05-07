@@ -1,4 +1,4 @@
-import { Task, TaskNodeGen } from './Task';
+import { Task, TaskNodeGen } from './';
 
 type Trig =
   | { a: 'A' | 'B', d: number, k: number }

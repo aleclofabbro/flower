@@ -4,9 +4,13 @@ export type Srv<Res, Req = void> =
   : (req: Req) => Promise<Res>
 
 
-type OutcomeOf<Outcomes> = {
+export type OutcomeOf<Outcomes> = {
   [P in keyof Outcomes]: { t: P, p: Outcomes[P] }
 }[keyof Outcomes]
+
+export type SomeOutcomeOf<Outcomes, Types extends keyof Outcomes> = {
+  [P in Types]: { t: P, p: Outcomes[P] }
+}
 
 export type TaskOutcomes = {
   [outcomeType: string]: any

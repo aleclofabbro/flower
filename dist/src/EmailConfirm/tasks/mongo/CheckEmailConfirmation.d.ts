@@ -1,2 +1,2 @@
-export declare const checkEmailConfirmation: (coll: import("mongodb").Collection<Pick<import("../../Types").ProcessRecord, "email" | "userName" | "sartedAt" | "attempts" | "maxAttempts" | "waitHours" | "status">>) => import("../../../lib/Task").Task<Pick<import("../../Types").ProcessRecord, "email" | "id">, import("../../Tasks").CheckEmailConfirmationOutcome>;
+export declare const checkEmailConfirmation: (coll: import("mongodb").Collection<Pick<import("../../Types").ProcessRecord, "email" | "userName" | "sartedAt" | "attempts" | "maxAttempts" | "waitHours" | "status">>) => import("../../../lib/Task").Task<Pick<import("../../Types").ProcessRecord, "id" | "email">, import("../../Tasks").CheckEmailConfirmationOutcome>;
 //# sourceMappingURL=CheckEmailConfirmation.d.ts.map
