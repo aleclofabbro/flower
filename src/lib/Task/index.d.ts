@@ -21,15 +21,9 @@ export type Task<
   Outcomes extends TaskOutcomes
   > = <O extends keyof Outcomes>(trigger: Trigger) => Promise<OutcomeOf<Outcomes>>
 
-// export type TaskNodeGen<
-//   Trigger,
-//   Outcomes extends TaskOutcomes
-//   > =
-//   <HT extends (keyof Trigger)[], HO extends (keyof Outcomes)[]>
+// export type TaskNodeGen<ForTask> =
+//   ForTask extends Task<infer Trigger, infer Outcomes>
+//   ? <HT extends (keyof Trigger)[], HO extends (keyof Outcomes)[]>
 //     (ho?: HO, ht?: HT) => Task<Trigger, Outcomes>
+//   : never
 
-export type TaskNodeGen<ForTask> =
-  ForTask extends Task<infer Trigger, infer Outcomes>
-  ? <HT extends (keyof Trigger)[], HO extends (keyof Outcomes)[]>
-    (ho?: HO, ht?: HT) => Task<Trigger, Outcomes>
-  : never
