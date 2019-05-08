@@ -34,7 +34,8 @@ export interface TaskAdapter<
   > {
   (req: Trigger): Promise<OutcomeOf<Outcomes>>
 
-  names: Names
+
+  taskName: string
 
   triggerTask: (t: Trigger, opts?: {
     taskId?: string | undefined;

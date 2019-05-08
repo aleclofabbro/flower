@@ -1,5 +1,5 @@
 import { Channel } from 'amqplib';
-import { Task, TaskAdapter, Names } from '../';
+import { Task, TaskAdapter, Names } from '../..';
 
 const namesFor = (name: string): Names => ({
   trigger: `${name}:trigger`,
@@ -11,9 +11,12 @@ const rnd = () => parseInt(`${Math.random()}`.substr(2)).toString(36).padStart(1
 const uuid = () => `${rnd()}${rnd()}`
 
 export const adaptTask = async <Tsk extends Task<any, any>>
-  (channel: Channel, name: string): Promise<TaskAdapter<Tsk>> => {
+  (
+    channel: Channel,
+    taskName: string
+  ): Promise<TaskAdapter<Tsk>> => {
 
-  const names = namesFor(name)
+  const names = namesFor(taskName)
 
   await Promise.all([
     channel.assertExchange(names.trigger, 'headers', {
@@ -45,7 +48,7 @@ export const adaptTask = async <Tsk extends Task<any, any>>
 
     const { taskId, probeName } = opts
     const types = Array.from(new Set(opts.types))
-    const { queue: probeQ } = await channel.assertQueue(`probe(${name}>${probeName || ''}):${uuid()}`, {
+    const { queue: probeQ } = await channel.assertQueue(`probe(${taskName}>${probeName || ''}):${uuid()}`, {
       exclusive: true
     })
 
@@ -117,8 +120,16 @@ export const adaptTask = async <Tsk extends Task<any, any>>
       await triggerTask(req, { taskId })
     })
 
-  return Object.assign(request, {
-    names,
+  return Object.assign<
+    TaskAdapter<Tsk>['request'],
+    Pick<TaskAdapter<Tsk>,
+      | 'consume'
+      | 'triggerTask'
+      | 'probeOut'
+      | 'taskName'
+      | 'request'>
+  >(request, {
+    taskName,
     triggerTask,
     probeOut,
     consume,

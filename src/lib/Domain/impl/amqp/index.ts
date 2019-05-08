@@ -1,7 +1,7 @@
 import { Channel } from 'amqplib';
-import { DomainTasks } from '..';
-import { adaptTask } from '../../Task/adapter/amqp';
-import { TaskAdapter } from '../../Task';
+import { DomainTasks } from '../..';
+import { adaptTask } from '../../../Task/impl/amqp/index';
+import { TaskAdapter } from '../../../Task';
 
 
 // const rnd = () => parseInt(`${Math.random()}`.substr(2)).toString(36).padStart(11, '0')

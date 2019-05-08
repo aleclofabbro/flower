@@ -1,6 +1,6 @@
-import { tasks as emailConfirmTasks } from '../EmailConfirm/tasks/mongo'
+import { tasks as emailConfirmTasks } from '../EmailConfirm/impl/mongo'
 import { MongoClient } from 'mongodb';
-import { CollSchema } from '../EmailConfirm/tasks/mongo/Types';
+import { CollSchema } from '../EmailConfirm/impl/mongo/Types';
 (async () => {
 
   const mongoClient = new MongoClient('mongodb://localhost:27017', { useNewUrlParser: true })
@@ -10,15 +10,11 @@ import { CollSchema } from '../EmailConfirm/tasks/mongo/Types';
   await db.dropCollection('EmailConfirmation')
 
   const coll = db.collection<CollSchema>('EmailConfirmation')
-  db.createIndex('EmailConfirmation', '_id', {
-    unique: true,
-    name: '_id'
-  })
-  db.createIndex('EmailConfirmation', 'userName', {
+  await db.createIndex('EmailConfirmation', 'userName', {
     unique: true,
     name: 'userName'
   })
-  db.createIndex('EmailConfirmation', 'email', {
+  await db.createIndex('EmailConfirmation', 'email', {
     unique: true,
     name: 'email'
   })

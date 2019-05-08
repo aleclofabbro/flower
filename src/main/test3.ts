@@ -1,8 +1,8 @@
 import amqp from 'amqplib'
-import { tasks as emailConfirmTasks } from '../EmailConfirm/tasks/mongo'
+import { tasks as emailConfirmTasks } from '../EmailConfirm/impl/mongo'
 import { MongoClient } from 'mongodb';
-import { CollSchema } from '../EmailConfirm/tasks/mongo/Types';
-import { adaptDomain } from '../lib/Domain/adapter/amqp';
+import { CollSchema } from '../EmailConfirm/impl/mongo/Types';
+import { adaptDomain } from '../lib/Domain/impl/amqp';
 import { EmailConfirmDomain } from '../EmailConfirm/Types';
 (async () => {
 
@@ -14,11 +14,11 @@ import { EmailConfirmDomain } from '../EmailConfirm/Types';
 
   const coll = db.collection<CollSchema>('EmailConfirmation')
 
-  db.createIndex('EmailConfirmation', 'userName', {
+  await db.createIndex('EmailConfirmation', 'userName', {
     unique: true,
     name: 'userName'
   })
-  db.createIndex('EmailConfirmation', 'email', {
+  await db.createIndex('EmailConfirmation', 'email', {
     unique: true,
     name: 'email'
   })
