@@ -1,4 +1,4 @@
-import { Task, TaskNodeGen } from './';
+import { Task, _REMOVE_ME_MAYBE_TaskNodeGen } from './';
 
 type Trig =
   | { a: 'A' | 'B', d: number, k: number }
@@ -8,7 +8,7 @@ type Out =
   { b: 'K' | 'J', c: 1 | 2 }
 
 type Tsk = Task<Trig, Out>
-declare const tng: TaskNodeGen<Tsk>
+declare const tng: _REMOVE_ME_MAYBE_TaskNodeGen<Tsk>
 declare const tn: Tsk
 
 tng()

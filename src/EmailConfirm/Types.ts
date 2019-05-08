@@ -1,3 +1,4 @@
+import { CheckEmailConfirmation, ShouldConfirmationProcessStart, TakeInCharge } from './Tasks';
 
 export type Email = string
 export type UserName = string
@@ -21,3 +22,9 @@ export interface ProcessRecord {
   status: Status
 }
 export type BaseRecord = Pick<ProcessRecord, 'maxAttempts' | 'waitHours'>
+
+export type EmailConfirmDomain = {
+  checkEmailConfirmation: CheckEmailConfirmation
+  shouldConfirmationProcessStart: ShouldConfirmationProcessStart
+  takeInCharge: TakeInCharge
+}

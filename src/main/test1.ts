@@ -1,4 +1,4 @@
-import EmailConfirmTasks from '../EmailConfirm/tasks/mongo'
+import { tasks as emailConfirmTasks } from '../EmailConfirm/tasks/mongo'
 import { MongoClient } from 'mongodb';
 import { CollSchema } from '../EmailConfirm/tasks/mongo/Types';
 (async () => {
@@ -23,7 +23,7 @@ import { CollSchema } from '../EmailConfirm/tasks/mongo/Types';
     name: 'email'
   })
 
-  const tasks = EmailConfirmTasks({
+  const tasks = emailConfirmTasks({
     base: {
       maxAttempts: 3,
       waitHours: 10

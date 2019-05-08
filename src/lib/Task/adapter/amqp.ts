@@ -1,12 +1,5 @@
 import { Channel } from 'amqplib';
-import { Task, /* OutcomeOf, */ SomeOutcomeOf, OutcomeOf } from '../';
-
-
-export interface Names {
-  trigger: string
-  queue: string
-  outcome: string
-}
+import { Task, TaskAdapter, Names } from '../';
 
 const namesFor = (name: string): Names => ({
   trigger: `${name}:trigger`,
@@ -17,12 +10,9 @@ const namesFor = (name: string): Names => ({
 const rnd = () => parseInt(`${Math.random()}`.substr(2)).toString(36).padStart(11, '0')
 const uuid = () => `${rnd()}${rnd()}`
 
-export const adapt = async <Tsk extends Task<any, any>>
-  (channel: Channel, name: string)/* : Promise<More<Tsk>> */ => {
+export const adaptTask = async <Tsk extends Task<any, any>>
+  (channel: Channel, name: string): Promise<TaskAdapter<Tsk>> => {
 
-  type Trigger = Tsk extends Task<infer T, any> ? T : never
-  type Outcomes = Tsk extends Task<any, infer O> ? O : never
-  //type OutcomesOf = OutcomeOf<Outcomes>
   const names = namesFor(name)
 
   await Promise.all([
@@ -37,11 +27,10 @@ export const adapt = async <Tsk extends Task<any, any>>
     }),
     channel.bindQueue(names.queue, names.trigger, '')
   ])
-  const triggerTask = async (
-    t: Trigger,
-    opts: {
-      taskId?: string
-    } = {}) => {
+
+  const triggerTask: TaskAdapter<Tsk>['triggerTask'] = async (
+    t,
+    opts = {}) => {
     const taskId = opts.taskId || uuid()
     channel.publish(names.trigger, '', Buffer.from(JSON.stringify(t)), {
       correlationId: taskId
@@ -49,14 +38,11 @@ export const adapt = async <Tsk extends Task<any, any>>
     return taskId
   }
 
-  const probeOut = async <Ks extends keyof Outcomes>(
-    sink: (msg: SomeOutcomeOf<Outcomes, Ks>[Ks]) => unknown,
-    opts: {
-      types?: Ks[]
-      taskId?: string
-      probeName?: string
-    } = {}
+  const probeOut: TaskAdapter<Tsk>['probeOut'] = async (
+    sink,
+    opts = {}
   ) => {
+
     const { taskId, probeName } = opts
     const types = Array.from(new Set(opts.types))
     const { queue: probeQ } = await channel.assertQueue(`probe(${name}>${probeName || ''}):${uuid()}`, {
@@ -91,7 +77,7 @@ export const adapt = async <Tsk extends Task<any, any>>
     return () => Promise.resolve(channel.cancel(consumerTag))
   }
 
-  const consume = async (task: Tsk) => {
+  const consume: TaskAdapter<Tsk>['consume'] = async (task) => {
 
     const { consumerTag } = await channel.consume(names.queue, async msg => {
       if (msg) {
@@ -119,23 +105,23 @@ export const adapt = async <Tsk extends Task<any, any>>
     return () => Promise.resolve(channel.cancel(consumerTag))
   }
 
-  const request = (req: Trigger) => new Promise<OutcomeOf<Outcomes>>(async (resolve, _reject) => {
-    const taskId = uuid()
-    const unsub = await probeOut(outcome => {
-      unsub()
-      //@ts-ignore
-      resolve(outcome)
-    }, {
-        taskId
-      })
-    await triggerTask(req, { taskId })
-  })
+  const request: TaskAdapter<Tsk>['request'] = req => new Promise(
+    async (resolve, _reject) => {
+      const taskId = uuid()
+      const unsub = await probeOut(outcome => {
+        unsub()
+        resolve(outcome)
+      }, {
+          taskId
+        })
+      await triggerTask(req, { taskId })
+    })
 
-  return {
+  return Object.assign(request, {
     names,
     triggerTask,
     probeOut,
     consume,
     request
-  }
+  })
 }

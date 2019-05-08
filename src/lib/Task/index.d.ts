@@ -21,16 +21,47 @@ export type Task<
   Outcomes extends TaskOutcomes
   > = <O extends keyof Outcomes>(trigger: Trigger) => Promise<OutcomeOf<Outcomes>>
 
-// export type TaskNodeGen<ForTask> =
-//   ForTask extends Task<infer Trigger, infer Outcomes>
-//   ? <HT extends (keyof Trigger)[], HO extends (keyof Outcomes)[]>
-//     (ho?: HO, ht?: HT) => Task<Trigger, Outcomes>
-//   : never
+export type _REMOVE_ME_MAYBE_TaskNodeGen<ForTask> =
+  ForTask extends Task<infer Trigger, infer Outcomes>
+  ? <HT extends (keyof Trigger)[], HO extends (keyof Outcomes)[]>
+    (ho?: HO, ht?: HT) => Task<Trigger, Outcomes>
+  : never
+
+export interface TaskAdapter<
+  Tsk extends Task<any, any>,
+  Trigger = Tsk extends Task<infer T, any> ? T : never,
+  Outcomes = Tsk extends Task<any, infer O> ? O : never
+  > {
+  (req: Trigger): Promise<OutcomeOf<Outcomes>>
+
+  names: Names
+
+  triggerTask: (t: Trigger, opts?: {
+    taskId?: string | undefined;
+  }) => Promise<string>
+
+  probeOut: <Ks extends keyof Outcomes>(
+    sink: (msg: SomeOutcomeOf<Outcomes, Ks>[Ks]) => unknown,
+    opts?: {
+      types?: Ks[]
+      taskId?: string
+      probeName?: string
+    }) => Promise<() => unknown>
+
+  consume: (task: Tsk) => Promise<() => unknown>
+
+  request: (req: Trigger) => Promise<OutcomeOf<Outcomes>>
+}
+export interface Names {
+  trigger: string
+  queue: string
+  outcome: string
+}
 
 export type Wire<
   From extends Task<any, any>,
   OutType extends From extends Task<any, infer O> ? keyof O : never,
   To extends Task<Msg, any>,
   Msg = From extends Task<any, infer O> ? O[OutType] : never,
-  > = OutType & Msg extends never ? never : [From, OutType, To]
+  > = [From, OutType, To]
 

@@ -1,8 +1,8 @@
 import amqp from 'amqplib'
-import EmailConfirmTasks from '../EmailConfirm/tasks/mongo'
+import { tasks as emailConfirmTasks } from '../EmailConfirm/tasks/mongo'
 import { MongoClient } from 'mongodb';
 import { CollSchema } from '../EmailConfirm/tasks/mongo/Types';
-import { adapt } from '../lib/Task/adapter/amqp';
+import { adaptTask } from '../lib/Task/adapter/amqp';
 import { CheckEmailConfirmation, ShouldConfirmationProcessStart, TakeInCharge } from '../EmailConfirm/Tasks';
 (async () => {
 
@@ -23,7 +23,7 @@ import { CheckEmailConfirmation, ShouldConfirmationProcessStart, TakeInCharge } 
     name: 'email'
   })
 
-  const tasks = EmailConfirmTasks({
+  const tasks = emailConfirmTasks({
     base: {
       maxAttempts: 3,
       waitHours: 10
@@ -34,9 +34,9 @@ import { CheckEmailConfirmation, ShouldConfirmationProcessStart, TakeInCharge } 
   const conn = await amqp.connect({})
   const channel = await conn.createChannel()
   const adapters = {
-    checkEmailConfirmation: await adapt<CheckEmailConfirmation>(channel, 'checkEmailConfirmation'),
-    shouldConfirmationProcessStart: await adapt<ShouldConfirmationProcessStart>(channel, 'shouldConfirmationProcessStart'),
-    takeInCharge: await adapt<TakeInCharge>(channel, 'takeInCharge'),
+    checkEmailConfirmation: await adaptTask<CheckEmailConfirmation>(channel, 'checkEmailConfirmation'),
+    shouldConfirmationProcessStart: await adaptTask<ShouldConfirmationProcessStart>(channel, 'shouldConfirmationProcessStart'),
+    takeInCharge: await adaptTask<TakeInCharge>(channel, 'takeInCharge'),
   }
 
 
