@@ -27,3 +27,10 @@ export type Task<
 //     (ho?: HO, ht?: HT) => Task<Trigger, Outcomes>
 //   : never
 
+export type Wire<
+  From extends Task<any, any>,
+  OutType extends From extends Task<any, infer O> ? keyof O : never,
+  To extends Task<Msg, any>,
+  Msg = From extends Task<any, infer O> ? O[OutType] : never,
+  > = OutType & Msg extends never ? never : [From, OutType, To]
+
