@@ -41,9 +41,9 @@ import { CheckEmailConfirmation, ShouldConfirmationProcessStart, TakeInCharge } 
 
 
 
-  await adapters.takeInCharge.probe(_ => console.log('.takeInCharge', _))
-  await adapters.checkEmailConfirmation.probe(_ => console.log('.checkEmailConfirmation', _))
-  await adapters.shouldConfirmationProcessStart.probe(_ => console.log('.shouldConfirmationProcessStart', _))
+  await adapters.takeInCharge.probeOut(_ => console.log('.takeInCharge', _))
+  await adapters.checkEmailConfirmation.probeOut(_ => console.log('.checkEmailConfirmation', _))
+  await adapters.shouldConfirmationProcessStart.probeOut(_ => console.log('.shouldConfirmationProcessStart', _))
 
 
   await adapters.checkEmailConfirmation.consume(tasks.checkEmailConfirmation)
@@ -52,14 +52,14 @@ import { CheckEmailConfirmation, ShouldConfirmationProcessStart, TakeInCharge } 
 
 
 
-  await adapters.takeInCharge.probe(async _ => {
+  await adapters.takeInCharge.probeOut(async _ => {
     console.log('[InCharge]', _)
     await adapters.checkEmailConfirmation.triggerTask({ email: 'e', id: _.p.id })
     await adapters.shouldConfirmationProcessStart.triggerTask({ id: _.p.id })
   }, {
       types: ['InCharge']
     })
-  await adapters.shouldConfirmationProcessStart.probe(async _ => {
+  await adapters.shouldConfirmationProcessStart.probeOut(async _ => {
     console.log('[ShouldStart]', _)
     // await adapters.shouldConfirmationProcessStart.triggerTask({ id: _.p.id })
     await adapters.checkEmailConfirmation.triggerTask({ email: 'e', id: _.p.id })
