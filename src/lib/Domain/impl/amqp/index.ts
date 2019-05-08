@@ -10,10 +10,8 @@ import { TaskAdapter } from '../../../Task';
 export const adaptDomain = async <Dom extends DomainTasks>(
   channel: Channel
 ) => {
-  //@ts-ignore
-  const domain: {
-    [TN in keyof Dom]: Promise<TaskAdapter<Dom[TN]>>
-  } = {}
+  type Holder = { [TN in keyof Dom]: Promise<TaskAdapter<Dom[TN]>> }
+  const domain: Holder = {} as Holder
   const get = async <N extends keyof Dom>(taskName: N): Promise<TaskAdapter<Dom[N]>> =>
     domain[taskName] || (domain[taskName] = adaptTask(channel, taskName as string))
 
