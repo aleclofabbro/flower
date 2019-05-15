@@ -59,12 +59,12 @@ export interface Names {
   outcome: string
 }
 
-export type Wire<
-  From extends Task<any, any>,
-  OutType extends From extends Task<any, infer O> ? keyof O : string,
-  To extends Task<Msg, any>,
-  Msg = From extends Task<any, infer O> ? O[OutType] : never,
-  > =
-  Msg extends never ? never : OutType extends never ? never :
-  [From, OutType, To]
+// export type Wire<
+//   From extends Task<any, any>,
+//   OutType extends From extends Task<any, infer O> ? keyof O : string,
+//   To extends Task<Msg, any>,
+//   Msg = From extends Task<any, infer O> ? O[OutType] : never,
+//   > =
+//   Msg extends never ? never : OutType extends never ? never :
+//   [From, OutType, To]
 

@@ -1,6 +1,6 @@
 
 import { ProcessRecord } from './Types';
-import { Task, Wire } from '../lib/Task';
+import { Task } from '../lib/Task';
 
 /**
  * TakeInCharge
@@ -40,8 +40,8 @@ export type ShouldConfirmationProcessStartOutcome = {
 }
 export type ShouldConfirmationProcessStart = Task<ShouldConfirmationProcessStartTrigger, ShouldConfirmationProcessStartOutcome>
 
-export type W1 = Wire<TakeInCharge, 'InCharge', ShouldConfirmationProcessStart>
-export type W2 = Wire<CheckEmailConfirmation, 'UserConfirmed', ShouldConfirmationProcessStart>
+// export type W1 = Wire<TakeInCharge, 'InCharge', ShouldConfirmationProcessStart>
+// export type W2 = Wire<CheckEmailConfirmation, 'UserConfirmed', ShouldConfirmationProcessStart>
 
 
 

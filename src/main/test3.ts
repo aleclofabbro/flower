@@ -3,9 +3,12 @@ import { tasks as emailConfirmTasks } from '../EmailConfirm/impl/mongo'
 import { MongoClient } from 'mongodb';
 import { CollSchema } from '../EmailConfirm/impl/mongo/Types';
 import { adaptDomain } from '../lib/Domain/impl/amqp';
-import { EmailConfirmTasks, w2, w1 } from '../EmailConfirm/Types';
+import { EmailConfirmTasks, wire1, wire2 } from '../EmailConfirm/Domain';
 (async () => {
 
+  /**
+   * SETUP MONGO
+   */
   const mongoClient = new MongoClient('mongodb://localhost:27017', { useNewUrlParser: true })
   await mongoClient.connect()
 
@@ -23,6 +26,15 @@ import { EmailConfirmTasks, w2, w1 } from '../EmailConfirm/Types';
     name: 'email'
   })
 
+  /**
+   * SETUP AMQP
+   */
+  const conn = await amqp.connect({})
+  const channel = await conn.createChannel()
+
+  /**
+   * SETUP DOMAIN
+   */
   const tasks = emailConfirmTasks({
     base: {
       maxAttempts: 3,
@@ -30,16 +42,15 @@ import { EmailConfirmTasks, w2, w1 } from '../EmailConfirm/Types';
     },
     coll
   })
-
-  const conn = await amqp.connect({})
-  const channel = await conn.createChannel()
-
   const domain = await adaptDomain<EmailConfirmTasks>(channel)
-
-  await domain.wire(...w1)
-  await domain.wire(...w2)
+  await domain.wire(...wire1)
+  await domain.wire(...wire2)
   //  domain.wire(...W4)
 
+
+  /**
+   * GET DOMAIN TASKS
+   */
   const [
     takeInCharge,
     checkEmailConfirmation,
@@ -50,17 +61,27 @@ import { EmailConfirmTasks, w2, w1 } from '../EmailConfirm/Types';
     domain.get('shouldConfirmationProcessStart'),
   ])
 
-  await takeInCharge.probeOut(_ => console.log('.takeInCharge', _))
-  await checkEmailConfirmation.probeOut(_ => console.log('.checkEmailConfirmation', _))
-  await shouldConfirmationProcessStart.probeOut(_ => console.log('.shouldConfirmationProcessStart', _))
-
-
+  /**
+   * SETUP TASK WORKERS 
+   */
   await checkEmailConfirmation.consume(tasks.checkEmailConfirmation)
   await shouldConfirmationProcessStart.consume(tasks.shouldConfirmationProcessStart)
   await takeInCharge.consume(tasks.takeInCharge)
 
 
 
+  /**
+   * LOG DOMAIN TASKS OUT WITH PROBE
+   */
+  await takeInCharge.probeOut(_ => console.log('.takeInCharge', _))
+  await checkEmailConfirmation.probeOut(_ => console.log('.checkEmailConfirmation', _))
+  await shouldConfirmationProcessStart.probeOut(_ => console.log('.shouldConfirmationProcessStart', _))
+
+
+
+  /**
+   * USE TASKS
+   */
   await takeInCharge({ email: 'cae', userName: 'cau' })
     .then(async _ => {
       if (_.t === 'InCharge') {

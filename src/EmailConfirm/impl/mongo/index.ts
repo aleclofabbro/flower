@@ -2,7 +2,8 @@ import { checkEmailConfirmation } from './CheckEmailConfirmation'
 import { shouldConfirmationProcessStart } from './ShouldConfirmationProcessStart'
 import { takeInCharge } from './TakeInCharge'
 import { Coll } from './Types';
-import { BaseRecord, EmailConfirmTasks } from '../../Types';
+import { BaseRecord } from '../../Types';
+import { EmailConfirmTasks } from '../../Domain';
 
 export interface Config {
   coll: Coll,
