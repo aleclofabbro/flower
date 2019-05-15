@@ -61,8 +61,10 @@ export interface Names {
 
 export type Wire<
   From extends Task<any, any>,
-  OutType extends From extends Task<any, infer O> ? keyof O : never,
+  OutType extends From extends Task<any, infer O> ? keyof O : string,
   To extends Task<Msg, any>,
   Msg = From extends Task<any, infer O> ? O[OutType] : never,
-  > = [From, OutType, To]
+  > =
+  Msg extends never ? never : OutType extends never ? never :
+  [From, OutType, To]
 

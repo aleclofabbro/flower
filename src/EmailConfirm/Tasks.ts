@@ -17,10 +17,10 @@ export type TakeInChargeOutcome = {
 /**
  * CheckEmailConfirmationTrigger
  */
-export type CheckEmailConfirmationTrigger = Pick<ProcessRecord, 'email' | 'id'>
+export type CheckEmailConfirmationTrigger = Pick<ProcessRecord, 'id' | 'email'>
 export type CheckEmailConfirmationOutcome = {
   UserConfirmed: Pick<ProcessRecord, 'id'>
-  Failed: {
+  Failed: Pick<ProcessRecord, 'id'> & {
     reason: 'notFound'
   }
 }
@@ -40,7 +40,8 @@ export type ShouldConfirmationProcessStartOutcome = {
 }
 export type ShouldConfirmationProcessStart = Task<ShouldConfirmationProcessStartTrigger, ShouldConfirmationProcessStartOutcome>
 
-export type W = Wire<TakeInCharge, 'InCharge', ShouldConfirmationProcessStart>
+export type W1 = Wire<TakeInCharge, 'InCharge', ShouldConfirmationProcessStart>
+export type W2 = Wire<CheckEmailConfirmation, 'UserConfirmed', ShouldConfirmationProcessStart>
 
 
 

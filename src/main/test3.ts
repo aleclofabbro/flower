@@ -3,7 +3,7 @@ import { tasks as emailConfirmTasks } from '../EmailConfirm/impl/mongo'
 import { MongoClient } from 'mongodb';
 import { CollSchema } from '../EmailConfirm/impl/mongo/Types';
 import { adaptDomain } from '../lib/Domain/impl/amqp';
-import { EmailConfirmDomain } from '../EmailConfirm/Types';
+import { EmailConfirmTasks, w2, w1 } from '../EmailConfirm/Types';
 (async () => {
 
   const mongoClient = new MongoClient('mongodb://localhost:27017', { useNewUrlParser: true })
@@ -34,8 +34,11 @@ import { EmailConfirmDomain } from '../EmailConfirm/Types';
   const conn = await amqp.connect({})
   const channel = await conn.createChannel()
 
-  const domain = await adaptDomain<EmailConfirmDomain>(channel)
+  const domain = await adaptDomain<EmailConfirmTasks>(channel)
 
+  await domain.wire(...w1)
+  await domain.wire(...w2)
+  //  domain.wire(...W4)
 
   const [
     takeInCharge,
@@ -58,28 +61,17 @@ import { EmailConfirmDomain } from '../EmailConfirm/Types';
 
 
 
-  await takeInCharge.probeOut(async _ => {
-    console.log('[InCharge]', _)
-    await shouldConfirmationProcessStart({ id: _.p.id })
-  }, {
-      types: ['InCharge']
-    })
-  await shouldConfirmationProcessStart.probeOut(async _ => {
-    console.log('[ShouldStart]', _)
-    // await shouldConfirmationProcessStart({ id: _.p.id })
-    await checkEmailConfirmation({ email: 'e', id: _.p.id })
-  }, {
-      types: ['ShouldStart']
-    })
-
-  await takeInCharge({ email: 'e', userName: 'u' })
+  await takeInCharge({ email: 'cae', userName: 'cau' })
     .then(async _ => {
       if (_.t === 'InCharge') {
-        // setTimeout(async () =>
-        await checkEmailConfirmation({ email: 'e', id: _.p.id })
-        // , 1000)
+        // setTimeout(() =>
+        checkEmailConfirmation({ email: 'cae', id: _.p.id, })//,
+        // 50
+        // )
+      } else {
+        _
       }
+      console.log(`-test takeInCharge : `, _)
     })
-  await takeInCharge({ email: 'e', userName: 'ua' })
-
+  await takeInCharge({ email: 'cae', userName: 'ua' })
 })()

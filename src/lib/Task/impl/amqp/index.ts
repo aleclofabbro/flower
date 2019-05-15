@@ -1,10 +1,10 @@
 import { Channel } from 'amqplib';
 import { Task, TaskAdapter, Names } from '../..';
 
-const namesFor = (name: string): Names => ({
-  trigger: `${name}:trigger`,
-  queue: `${name}:queue`,
-  outcome: `${name}:outcome`
+export const namesFor = (name: keyof any): Names => ({
+  trigger: `${String(name)}:trigger`,
+  queue: `${String(name)}:queue`,
+  outcome: `${String(name)}:outcome`
 })
 
 const rnd = () => parseInt(`${Math.random()}`.substr(2)).toString(36).padStart(11, '0')
@@ -36,7 +36,10 @@ export const adaptTask = async <Tsk extends Task<any, any>>
     opts = {}) => {
     const taskId = opts.taskId || uuid()
     channel.publish(names.trigger, '', Buffer.from(JSON.stringify(t)), {
-      correlationId: taskId
+      correlationId: taskId,
+      headers: {
+        taskId
+      }
     })
     return taskId
   }
@@ -62,8 +65,9 @@ export const adaptTask = async <Tsk extends Task<any, any>>
           })
           channel.ack(msg)
         } catch (e) {
-          console.error(e)
+          // console.error(e)
           channel.nack(msg)
+          // channel.nack(msg)
         }
       }
     })

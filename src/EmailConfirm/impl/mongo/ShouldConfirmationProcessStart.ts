@@ -25,8 +25,8 @@ export const shouldConfirmationProcessStart = (coll: Coll): ShouldConfirmationPr
       p: trigger
     }
   } else {
-    const record = await coll.findOne({ _id })
-    if (!record) {
+    const record = await coll.findOne({ _id }, { projection: { status: true, attempts: true, maxAttempts: true } })
+    if (!record || record.status !== Status.WIP) {
       return {
         t: 'NotFound',
         p: trigger

@@ -3,7 +3,7 @@ import { Status } from '../../Types';
 import { Coll } from './Types';
 import { ObjectID } from 'bson';
 
-export const checkEmailConfirmation = (coll: Coll): CheckEmailConfirmation => async (trigger) => {
+export const checkEmailConfirmation = (coll: Coll): CheckEmailConfirmation => async trigger => {
   const _id = ObjectID.createFromHexString(trigger.id)
 
   const resp = await coll.updateOne({
@@ -12,7 +12,8 @@ export const checkEmailConfirmation = (coll: Coll): CheckEmailConfirmation => as
     status: Status.WIP
   }, {
       $set: {
-        status: Status.USER_CONFIRMED
+        status: Status.USER_CONFIRMED,
+        confirmedAt: new Date()
       }
     })
 
@@ -27,6 +28,7 @@ export const checkEmailConfirmation = (coll: Coll): CheckEmailConfirmation => as
     return {
       t: 'Failed',
       p: {
+        id: trigger.id,
         reason: 'notFound'
       }
     }
