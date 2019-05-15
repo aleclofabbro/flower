@@ -73,26 +73,30 @@ import { EmailConfirmTasks, wire1, wire2 } from '../EmailConfirm/Domain';
   /**
    * LOG DOMAIN TASKS OUT WITH PROBE
    */
-  await takeInCharge.probeOut(_ => console.log('.takeInCharge', _))
-  await checkEmailConfirmation.probeOut(_ => console.log('.checkEmailConfirmation', _))
-  await shouldConfirmationProcessStart.probeOut(_ => console.log('.shouldConfirmationProcessStart', _))
+  // await takeInCharge.probeOut(_ => console.log('.takeInCharge', _))
+  // await checkEmailConfirmation.probeOut(_ => console.log('.checkEmailConfirmation', _))
+  // await shouldConfirmationProcessStart.probeOut(_ => console.log('.shouldConfirmationProcessStart', _))
 
 
 
   /**
    * USE TASKS
    */
-  await takeInCharge({ email: 'cae', userName: 'cau' })
+  takeInCharge({ email: 'cae', userName: 'cau' })
     .then(async _ => {
       if (_.t === 'InCharge') {
+        console.log(`.. takeInCharge : `, _, `checking...`)
         // setTimeout(() =>
-        checkEmailConfirmation({ email: 'cae', id: _.p.id, })//,
+        checkEmailConfirmation({ email: 'cae', id: _.p.id, })
+          .then(console.log)
         // 50
         // )
       } else {
-        _
+        console.log(`..?????????? what ? takeInCharge : `, _)
       }
-      console.log(`-test takeInCharge : `, _)
     })
   await takeInCharge({ email: 'cae', userName: 'ua' })
+    .then(async _ => {
+      console.log(`-test takeInCharge : `, _)
+    })
 })()

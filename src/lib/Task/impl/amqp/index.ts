@@ -10,15 +10,12 @@ export const namesFor = (name: keyof any): Names => ({
 const rnd = () => parseInt(`${Math.random()}`.substr(2)).toString(36).padStart(11, '0')
 const uuid = () => `${rnd()}${rnd()}`
 
-export const adaptTask = async <Tsk extends Task<any, any>>
-  (
-    channel: Channel,
-    taskName: string
-  ): Promise<TaskAdapter<Tsk>> => {
-
+export const prepareTask = (
+  channel: Channel,
+  taskName: string
+) => {
   const names = namesFor(taskName)
-
-  await Promise.all([
+  return Promise.all([
     channel.assertExchange(names.trigger, 'headers', {
       durable: true
     }),
@@ -30,6 +27,16 @@ export const adaptTask = async <Tsk extends Task<any, any>>
     }),
     channel.bindQueue(names.queue, names.trigger, '')
   ])
+}
+
+export const adaptTask = async <Tsk extends Task<any, any>>
+  (
+    channel: Channel,
+    taskName: string
+  ): Promise<TaskAdapter<Tsk>> => {
+
+  const names = namesFor(taskName)
+  await prepareTask(channel, taskName)
 
   const triggerTask: TaskAdapter<Tsk>['triggerTask'] = async (
     t,
@@ -52,7 +59,8 @@ export const adaptTask = async <Tsk extends Task<any, any>>
     const { taskId, probeName } = opts
     const types = Array.from(new Set(opts.types))
     const { queue: probeQ } = await channel.assertQueue(`probe(${taskName}>${probeName || ''}):${uuid()}`, {
-      exclusive: true
+      exclusive: true,
+      autoDelete: true
     })
 
     const { consumerTag } = await channel.consume(probeQ, async msg => {

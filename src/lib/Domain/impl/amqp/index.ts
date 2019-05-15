@@ -1,6 +1,6 @@
 import { Channel } from 'amqplib';
 import { DomainTasks, GetOutTypeName, DomainWire } from '../..';
-import { adaptTask, namesFor } from '../../../Task/impl/amqp/index';
+import { adaptTask, namesFor, prepareTask } from '../../../Task/impl/amqp/index';
 import { TaskAdapter } from '../../../Task';
 
 export const adaptDomain = async <Dom extends DomainTasks>(
@@ -17,8 +17,9 @@ export const adaptDomain = async <Dom extends DomainTasks>(
   >(
     ...args: DomainWire<Dom, From, OT, To>
   ) => {
-
     const [from, outTypeName, to] = args
+    prepareTask(channel, from as string)
+    prepareTask(channel, to as string)
     const { outcome } = namesFor(from)
     const { trigger } = namesFor(to)
     console.log(`[${outcome}.${outTypeName}] => [${trigger}]`);
