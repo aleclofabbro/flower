@@ -1,4 +1,4 @@
-import { tasks as emailConfirmTasks } from '../EmailConfirm/impl/mongo'
+import { emailConfirmTasks } from '../EmailConfirm/impl/mongo'
 import { MongoClient } from 'mongodb';
 import { CollSchema } from '../EmailConfirm/impl/mongo/Types';
 (async () => {

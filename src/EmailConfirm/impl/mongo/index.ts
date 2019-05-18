@@ -10,7 +10,7 @@ export interface Config {
   base: BaseRecord
 }
 
-export const tasks = (_: Config): EmailConfirmTasks => {
+export const emailConfirmTasks = (_: Config): EmailConfirmTasks => {
   return {
     checkEmailConfirmation: checkEmailConfirmation(_.coll),
     shouldConfirmationProcessStart: shouldConfirmationProcessStart(_.coll),

@@ -67,7 +67,7 @@ export const createDomain = <Msgs extends { [k: string]: any }, Flw extends Flow
   }
 
 
-  const msgNames = Object.keys(domainFlow) as MsgNames[]
+  const msgNames = Object.keys(domainFlow)
   const unsubscribe = msgNames.reduce<{ [N in MsgNames]: () => unknown }>((unsubs, msgName) => {
     type MsgName = typeof msgName
     const handler = async (message: Msgs[MsgName], meta: Meta) => {
@@ -85,13 +85,11 @@ export const createDomain = <Msgs extends { [k: string]: any }, Flw extends Flow
     }
 
     eeIn.on(
-      //@ts-ignore
       msgName,
       handler)
     return Object.assign(
       unsubs, {
         [msgName]: () => eeIn.off(
-          //@ts-ignore
           msgName,
           handler)
       })
